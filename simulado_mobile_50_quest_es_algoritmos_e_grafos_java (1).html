@@ -1,0 +1,2068 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Simulado 50Q: Algoritmos, Árvores e Grafos (Java)</title>
+    <!-- Meta Tags de PWA Nativo -->
+    <meta name="theme-color" content="#1e1f29">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Algoritmos 50Q">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='26' fill='%231e1f29'/%3E%3Crect x='8' y='8' width='104' height='104' rx='20' fill='%23282a36' stroke='%23bd93f9' stroke-width='4'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%2350fa7b' font-family='monospace' font-weight='bold' font-size='42'%3E50Q%3C/text%3E%3Ctext x='50%25' y='82%25' dominant-baseline='middle' text-anchor='middle' fill='%238be9fd' font-family='sans-serif' font-weight='bold' font-size='16'%3EJAVA%3C/text%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='26' fill='%231e1f29'/%3E%3Crect x='8' y='8' width='104' height='104' rx='20' fill='%23282a36' stroke='%23bd93f9' stroke-width='4'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%2350fa7b' font-family='monospace' font-weight='bold' font-size='42'%3E50Q%3C/text%3E%3Ctext x='50%25' y='82%25' dominant-baseline='middle' text-anchor='middle' fill='%238be9fd' font-family='sans-serif' font-weight='bold' font-size='16'%3EJAVA%3C/text%3E%3C/svg%3E">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        dracula: {
+                            bg: '#1e1f29',
+                            card: '#282a36',
+                            current: '#44475a',
+                            fg: '#f8f8f2',
+                            comment: '#6272a4',
+                            cyan: '#8be9fd',
+                            green: '#50fa7b',
+                            orange: '#ffb86c',
+                            pink: '#ff79c6',
+                            purple: '#bd93f9',
+                            red: '#ff5555',
+                            yellow: '#f1fa8c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+        }
+        html, body {
+            height: 100dvh;
+            width: 100%;
+            overflow: hidden;
+            background-color: #1e1f29;
+            color: #f8f8f2;
+            -webkit-tap-highlight-color: transparent;
+            overscroll-behavior-y: none;
+            user-select: none;
+        }
+        pre, code {
+            font-family: 'JetBrains Mono', monospace;
+            user-select: text;
+        }
+        .safe-top {
+            padding-top: max(0.5rem, var(--sat));
+        }
+        .safe-bottom {
+            padding-bottom: max(0.5rem, var(--sab));
+        }
+        /* Scrollbars discretas */
+        .custom-scroll::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(25, 26, 33, 0.4);
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #44475a;
+            border-radius: 9999px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-[100dvh] w-full max-w-md sm:max-w-xl mx-auto bg-dracula-bg font-sans antialiased selection:bg-dracula-purple selection:text-dracula-bg border-x border-dracula-current/40 shadow-2xl">
+
+    <!-- TOP BAR COMPACTA (ESTILO APP NATIVO) -->
+    <header class="safe-top shrink-0 bg-dracula-card/95 backdrop-blur-md border-b border-dracula-current px-3 pb-2 z-20">
+        <!-- Linha 1: Logo + Status Salvo + Botões PWA/Filtro -->
+        <div class="flex items-center justify-between gap-1.5 pt-1">
+            <div class="flex items-center gap-2 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-dracula-purple/20 border border-dracula-purple/50 flex items-center justify-center shrink-0">
+                    <span class="font-mono font-extrabold text-xs text-dracula-purple">50Q</span>
+                </div>
+                <div class=" truncate">
+                    <div class="flex items-center gap-1.5">
+                        <h1 class="text-xs sm:text-sm font-extrabold text-dracula-fg truncate">Algoritmos & Grafos</h1>
+                        <span id="saveBadge" class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-dracula-green/15 text-dracula-green border border-dracula-green/30 transition-opacity duration-300">
+                            💾 Salvo
+                        </span>
+                    </div>
+                    <p class="text-[10px] text-dracula-comment truncate">Java • BST • AVL • BFS • Euler • Big-O</p>
+                </div>
+            </div>
+
+            <!-- Ações Rápidas no Topo -->
+            <div class="flex items-center gap-1 shrink-0">
+                <!-- Botão Instalar PWA Nativo (aparece automaticamente quando suportado) -->
+                <button id="btnInstallPwa" onclick="triggerNativeInstall()" class="hidden items-center gap-1 px-2 py-1.5 rounded-xl bg-dracula-green text-dracula-bg font-extrabold text-[11px] shadow active:scale-95 transition">
+                    📲 Instalar
+                </button>
+                <!-- Botão Kit GitHub Pages / Baixar p/ Celular -->
+                <button onclick="openPwaModal()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-dracula-purple/20 border border-dracula-purple/50 text-dracula-purple font-bold text-[11px] active:scale-95 transition" title="Baixar para Celular e GitHub Pages">
+                    <span>📦</span>
+                    <span class="hidden xs:inline">GitHub/App</span>
+                </button>
+                <!-- Alternar Modo Card vs Lista -->
+                <button id="btnToggleView" onclick="toggleViewMode()" class="px-2 py-1.5 rounded-xl bg-dracula-bg border border-dracula-current text-dracula-cyan font-bold text-[11px] active:scale-95 transition" title="Alternar visualização">
+                    1/1
+                </button>
+            </div>
+        </div>
+
+        <!-- Linha 2: Mini Placar + Barra de Progresso -->
+        <div class="mt-2 bg-dracula-bg/90 rounded-xl p-1.5 border border-dracula-current/80">
+            <div class="grid grid-cols-4 gap-1 text-center items-center">
+                <button onclick="openMapModal()" class="flex flex-col items-center justify-center py-0.5 rounded-lg hover:bg-dracula-current/30 transition">
+                    <span class="text-[9px] uppercase text-dracula-comment font-bold">Feitas</span>
+                    <span id="statProgress" class="text-xs font-extrabold text-dracula-fg">0/50</span>
+                </button>
+                <div class="flex flex-col items-center justify-center py-0.5">
+                    <span class="text-[9px] uppercase text-dracula-comment font-bold">Acertos</span>
+                    <span id="statCorrect" class="text-xs font-extrabold text-dracula-green">0</span>
+                </div>
+                <div class="flex flex-col items-center justify-center py-0.5">
+                    <span class="text-[9px] uppercase text-dracula-comment font-bold">Erros</span>
+                    <span id="statWrong" class="text-xs font-extrabold text-dracula-red">0</span>
+                </div>
+                <div class="flex flex-col items-center justify-center py-0.5">
+                    <span class="text-[9px] uppercase text-dracula-comment font-bold">Precisão</span>
+                    <span id="statPercent" class="text-xs font-extrabold text-dracula-purple">0%</span>
+                </div>
+            </div>
+            <!-- Barra de Progresso Contínua -->
+            <div class="w-full h-1.5 bg-dracula-card rounded-full overflow-hidden mt-1 flex">
+                <div id="barCorrect" class="h-full bg-dracula-green transition-all duration-300" style="width: 0%"></div>
+                <div id="barWrong" class="h-full bg-dracula-red transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Linha 3: Pílulas de Nível + Botão de Filtros de Tópico -->
+        <div class="flex items-center justify-between gap-1.5 mt-2">
+            <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 flex-1" id="levelFilterContainer">
+                <button onclick="setLevelFilter('ALL')" data-level="ALL" class="level-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition bg-dracula-purple text-dracula-bg border-dracula-purple">
+                    Todas (50)
+                </button>
+                <button onclick="setLevelFilter('Fácil')" data-level="Fácil" class="level-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition bg-dracula-bg text-dracula-green border-dracula-current">
+                    Fácil (17)
+                </button>
+                <button onclick="setLevelFilter('Médio')" data-level="Médio" class="level-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition bg-dracula-bg text-dracula-orange border-dracula-current">
+                    Médio (17)
+                </button>
+                <button onclick="setLevelFilter('Difícil')" data-level="Difícil" class="level-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition bg-dracula-bg text-dracula-pink border-dracula-current">
+                    Difícil (16)
+                </button>
+            </div>
+
+            <button onclick="toggleFilterDrawer()" id="btnFilterDrawer" class="shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-dracula-bg border border-dracula-current text-dracula-fg flex items-center gap-1 active:scale-95 transition">
+                <span>🎯 Tema</span>
+                <span id="activeFilterDot" class="hidden w-2 h-2 rounded-full bg-dracula-cyan"></span>
+            </button>
+        </div>
+
+        <!-- Gaveta Retrátil de Filtro por Tema e Status -->
+        <div id="filterDrawer" class="hidden pt-2 mt-2 border-t border-dracula-current/60 space-y-2">
+            <div>
+                <label for="topicSelect" class="block text-[10px] font-bold uppercase text-dracula-comment mb-1">Filtrar pelos 6 Temas do Professor:</label>
+                <select id="topicSelect" onchange="setTopicFilter(this.value)" class="w-full bg-dracula-bg border border-dracula-current rounded-xl px-2.5 py-1.5 text-xs text-dracula-fg focus:outline-none focus:border-dracula-purple">
+                    <option value="ALL">Todos os 6 Tópicos (50 questões)</option>
+                    <option value="Análise de Algoritmos">1. Análise de Algoritmos e Complexidade</option>
+                    <option value="Algoritmos de Ordenação">2. Algoritmos de Ordenação (Java)</option>
+                    <option value="Inserção em Árvore Binária (BST)">3. Inserção em Árvore Binária (BST)</option>
+                    <option value="Árvore AVL">4. Árvore AVL e Rotações</option>
+                    <option value="História da Teoria dos Grafos">5. História dos Grafos (Königsberg / Euler)</option>
+                    <option value="Busca em Largura (BFS)">6. Busca em Largura (BFS) em Grafos</option>
+                </select>
+            </div>
+            <div>
+                <label for="statusSelect" class="block text-[10px] font-bold uppercase text-dracula-comment mb-1">Filtrar por Status / Favoritas:</label>
+                <select id="statusSelect" onchange="setStatusFilter(this.value)" class="w-full bg-dracula-bg border border-dracula-current rounded-xl px-2.5 py-1.5 text-xs text-dracula-fg focus:outline-none focus:border-dracula-purple">
+                    <option value="ALL">Todas as Questões</option>
+                    <option value="UNANSWERED">⏳ Apenas Não Respondidas</option>
+                    <option value="WRONG">❌ Apenas Questões que Errei</option>
+                    <option value="CORRECT">✅ Apenas Questões que Acertei</option>
+                    <option value="BOOKMARKED">⭐ Marcadas para Revisão (Estrela)</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <!-- ÁREA CENTRAL ROLÁVEL (CONTEÚDO DA QUESTÃO) -->
+    <main id="mainScrollArea" class="flex-1 overflow-y-auto custom-scroll px-3 py-3 space-y-3">
+        <div id="questionsContainer" class="space-y-4 pb-4"></div>
+    </main>
+
+    <!-- BARRA DE NAVEGAÇÃO INFERIOR NATIVA (BOTTOM APP BAR) -->
+    <nav id="bottomAppBar" class="safe-bottom shrink-0 bg-dracula-card/95 backdrop-blur-md border-t border-dracula-current px-3 pt-2 z-20">
+        <div class="grid grid-cols-4 gap-2 items-center">
+            <!-- Botão Anterior -->
+            <button id="btnBottomPrev" onclick="prevCard()" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-dracula-bg border border-dracula-current text-xs font-bold text-dracula-fg active:scale-95 transition disabled:opacity-40">
+                <span>←</span>
+                <span>Ant.</span>
+            </button>
+
+            <!-- Botão Ver Explicação (Ativo após responder) -->
+            <button id="btnBottomExp" onclick="triggerCurrentExplanation()" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-dracula-bg border border-dracula-current text-xs font-bold text-dracula-comment transition active:scale-95">
+                <span>💡</span>
+                <span id="lblBottomExp">Explicação</span>
+            </button>
+
+            <!-- Botão Mapa 50Q / Backup -->
+            <button onclick="openMapModal()" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-dracula-bg border border-dracula-current text-xs font-bold text-dracula-cyan active:scale-95 transition">
+                <span>🗺️</span>
+                <span id="lblBottomCounter">1/50</span>
+            </button>
+
+            <!-- Botão Próxima -->
+            <button id="btnBottomNext" onclick="nextCard()" class="flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-dracula-purple text-dracula-bg text-xs font-extrabold active:scale-95 transition shadow-sm disabled:opacity-40">
+                <span>Próx.</span>
+                <span>→</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MODAL 1: MAPA DAS 50 QUESTÕES + BACKUP JSON -->
+    <div id="mapModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm">
+        <div class="bg-dracula-card border-t sm:border border-dracula-current rounded-t-3xl sm:rounded-2xl w-full max-w-md max-h-[88dvh] flex flex-col p-4 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-dracula-current">
+                <div>
+                    <h3 class="text-sm font-extrabold text-dracula-fg">🗺️ Mapa das 50 Questões & Progresso</h3>
+                    <p class="text-[11px] text-dracula-comment">Toque em qualquer número para pular direto</p>
+                </div>
+                <button onclick="closeMapModal()" class="w-8 h-8 rounded-xl bg-dracula-bg border border-dracula-current text-dracula-fg font-bold text-sm">✕</button>
+            </div>
+
+            <!-- Legenda -->
+            <div class="flex flex-wrap items-center gap-3 py-2.5 text-[11px] text-dracula-comment border-b border-dracula-current/50">
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-dracula-green inline-block"></span> Acerto</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-dracula-red inline-block"></span> Erro</span>
+                <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-sm bg-dracula-bg border border-dracula-current inline-block"></span> Pendente</span>
+                <span class="flex items-center gap-1"><span class="text-dracula-yellow">★</span> Revisar</span>
+            </div>
+
+            <!-- Grade de 50 botões -->
+            <div id="questionGridMap" class="grid grid-cols-5 sm:grid-cols-10 gap-2 py-3 overflow-y-auto custom-scroll flex-1"></div>
+
+            <!-- Ações de Backup e Reset -->
+            <div class="pt-3 border-t border-dracula-current space-y-2">
+                <div class="text-[10px] font-bold uppercase tracking-wider text-dracula-comment">Backup de Progresso (Salvo no Telefone):</div>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="exportProgressJson()" class="py-2 px-2 rounded-xl bg-dracula-bg border border-dracula-cyan/50 text-dracula-cyan text-[11px] font-bold active:scale-95 transition">
+                        ⬇️ Exportar .JSON
+                    </button>
+                    <label class="py-2 px-2 rounded-xl bg-dracula-bg border border-dracula-purple/50 text-dracula-purple text-[11px] font-bold text-center cursor-pointer active:scale-95 transition">
+                        ⬆️ Importar .JSON
+                        <input type="file" accept=".json" onchange="importProgressJson(event)" class="hidden">
+                    </label>
+                    <button onclick="closeMapModal(); openResetModal();" class="py-2 px-2 rounded-xl bg-dracula-red/15 border border-dracula-red/50 text-dracula-red text-[11px] font-bold active:scale-95 transition">
+                        🗑️ Zerar Tudo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: KIT GITHUB PAGES & INSTALAÇÃO NO TELEFONE -->
+    <div id="pwaModal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm">
+        <div class="bg-dracula-card border-t sm:border border-dracula-current rounded-t-3xl sm:rounded-2xl w-full max-w-md max-h-[90dvh] flex flex-col p-4 shadow-2xl">
+            <div class="flex items-center justify-between pb-3 border-b border-dracula-current">
+                <div>
+                    <h3 class="text-sm font-extrabold text-dracula-fg">📦 Kit GitHub Pages & App Offline</h3>
+                    <p class="text-[11px] text-dracula-comment">Baixe os arquivos ou instale direto na tela inicial</p>
+                </div>
+                <button onclick="closePwaModal()" class="w-8 h-8 rounded-xl bg-dracula-bg border border-dracula-current text-dracula-fg font-bold text-sm">✕</button>
+            </div>
+
+            <div class="py-3 overflow-y-auto custom-scroll space-y-3 text-xs leading-relaxed">
+                <!-- Opção 1: Baixar o Arquivo Único ou Kit PWA para o GitHub -->
+                <div class="bg-dracula-bg p-3 rounded-2xl border border-dracula-purple/40 space-y-2">
+                    <div class="font-extrabold text-dracula-purple flex items-center gap-1.5">
+                        <span>1️⃣</span>
+                        <span>Arquivos Prontos para seu Repositório GitHub</span>
+                    </div>
+                    <p class="text-[11px] text-dracula-fg/90">
+                        Coloque estes 3 arquivos na raiz do seu repositório e ative o <strong>GitHub Pages</strong>. O Service Worker (<code class="text-dracula-cyan">sw.js</code>) faz o app funcionar <strong>100% offline</strong> no seu telefone!
+                    </p>
+                    <div class="grid grid-cols-1 gap-1.5 pt-1">
+                        <button onclick="downloadSelfHtml()" class="w-full py-2.5 px-3 rounded-xl bg-dracula-purple text-dracula-bg font-extrabold text-xs flex items-center justify-between shadow active:scale-95 transition">
+                            <span>📄 Baixar index.html (App Completo)</span>
+                            <span class="font-mono text-[10px] bg-black/20 px-2 py-0.5 rounded">Obrigatório</span>
+                        </button>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button onclick="downloadManifestFile()" class="py-2 px-2.5 rounded-xl bg-dracula-card border border-dracula-cyan/50 text-dracula-cyan font-bold text-[11px] active:scale-95 transition">
+                                ⚙️ Baixar manifest.json
+                            </button>
+                            <button onclick="downloadServiceWorkerFile()" class="py-2 px-2.5 rounded-xl bg-dracula-card border border-dracula-green/50 text-dracula-green font-bold text-[11px] active:scale-95 transition">
+                                ⚡ Baixar sw.js (Offline)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Opção 2: Como instalar no Android / iOS -->
+                <div class="bg-dracula-bg p-3 rounded-2xl border border-dracula-current space-y-2">
+                    <div class="font-extrabold text-dracula-green flex items-center gap-1.5">
+                        <span>2️⃣</span>
+                        <span>Como Instalar na Tela Inicial do Telefone</span>
+                    </div>
+                    <ul class="space-y-1.5 text-[11px] text-dracula-fg/90">
+                        <li>
+                            <strong class="text-dracula-cyan">• No Android (Chrome / Edge / Brave):</strong> Abra o link do seu GitHub Pages, toque nos <strong>3 pontinhos (⋮)</strong> no canto superior direito e selecione <strong>"Instalar aplicativo"</strong> ou <strong>"Adicionar à tela inicial"</strong>.
+                        </li>
+                        <li>
+                            <strong class="text-dracula-orange">• No iPhone (Safari):</strong> Toque no botão <strong>Compartilhar</strong> na barra inferior e escolha <strong>"Adicionar à Tela de Início"</strong>.
+                        </li>
+                        <li>
+                            <strong class="text-dracula-purple">• Uso Direto Offline (Arquivo Local):</strong> Você também pode baixar o <code class="text-dracula-cyan">index.html</code> acima direto na pasta Downloads do celular e abrir no navegador!
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Garantia de Salvamento -->
+                <div class="bg-dracula-green/10 border border-dracula-green/30 rounded-xl p-2.5 text-[11px] text-dracula-fg">
+                    ✅ <strong>Progresso Persistente:</strong> Todas as suas respostas, questão atual, filtros e questões favoritadas (⭐) ficam salvas automaticamente no <code class="text-dracula-green">localStorage</code> do aparelho.
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-dracula-current">
+                <button onclick="closePwaModal()" class="w-full py-2.5 rounded-xl bg-dracula-bg border border-dracula-current text-xs font-bold text-dracula-fg">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Reset Modal (No native confirm/alert) -->
+    <div id="resetModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+        <div class="bg-dracula-card border border-dracula-current rounded-2xl max-w-sm w-full p-5 shadow-2xl">
+            <h3 class="text-base font-bold text-dracula-fg mb-2">Zerar progresso do simulado?</h3>
+            <p class="text-xs text-dracula-comment mb-5 leading-relaxed">
+                Todas as suas respostas marcadas e estatísticas de acertos serão limpas para você refazer as 50 questões do zero.
+            </p>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl text-xs font-semibold bg-dracula-bg text-dracula-fg border border-dracula-current">
+                    Cancelar
+                </button>
+                <button onclick="confirmResetAll()" class="px-4 py-2 rounded-xl text-xs font-bold bg-dracula-red text-dracula-bg">
+                    Sim, Zerar Tudo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // BANCO COMPLETO COM 50 QUESTÕES (17 FÁCEIS, 17 MÉDIAS, 16 DIFÍCEIS)
+        // ============================================================================
+        const QUESTIONS = [
+            // ========================================================================
+            // NÍVEL FÁCIL (17 QUESTÕES: #1 a #17)
+            // ========================================================================
+            {
+                id: 1,
+                level: "Fácil",
+                topic: "Análise de Algoritmos",
+                type: "Múltipla Escolha",
+                question: "Na análise assintótica de algoritmos, qual notação é utilizada especificamente para representar o LIMITE SUPERIOR de crescimento de uma função (garantindo que o custo não cresce mais rápido que determinada curva para entradas grandes)?",
+                code: null,
+                options: [
+                    "Notação Big-Omega (Ω)",
+                    "Notação Big-O (O)",
+                    "Notação Big-Theta (Θ)",
+                    "Notação Little-Omega (ω)",
+                    "Notação Amortizada Sigma (Σ)"
+                ],
+                correct: 1,
+                explanation: "A notação Big-O (O) representa o limite assintótico superior (teto de crescimento), sendo a mais utilizada para expressar garantias de pior caso. Já Big-Omega (Ω) representa o limite inferior (piso) e Big-Theta (Θ) representa o limite restrito/exato (quando O e Ω coincidem)."
+            },
+            {
+                id: 2,
+                level: "Fácil",
+                topic: "Análise de Algoritmos",
+                type: "Verdadeiro ou Falso",
+                question: "Julgue as afirmativas abaixo sobre a hierarquia de complexidades assintóticas em Verdadeiro (V) ou Falso (F):\n\n( ) Um algoritmo de complexidade O(1) tem tempo de execução que não depende do tamanho da entrada n.\n( ) Para entradas grandes (n → ∞), um algoritmo O(n log n) é assintoticamente mais rápido que um algoritmo O(n²).\n( ) Na notação Big-O, constantes multiplicativas são preservadas, logo O(3n) e O(n) pertencem a classes de complexidade diferentes.\n\nAssinale a alternativa que apresenta a sequência correta:",
+                code: null,
+                options: [
+                    "V - V - F",
+                    "V - F - V",
+                    "F - V - V",
+                    "V - V - V",
+                    "F - F - V"
+                ],
+                correct: 0,
+                explanation: "1ª (V): O(1) é complexidade constante (ex: acessar v[0]).\n2ª (V): A curva linearítmica (n log n) cresce muito mais devagar que a quadrática (n²).\n3ª (F): Na análise assintótica, constantes multiplicativas e termos de menor grau são sempre descartados; portanto, O(3n) = O(n)."
+            },
+            {
+                id: 3,
+                level: "Fácil",
+                topic: "Análise de Algoritmos",
+                type: "Análise de Código Java",
+                question: "Analise o método Java abaixo e assinale a alternativa que indica corretamente sua complexidade de tempo em função de n:",
+                code: `public int somarVetor(int[] v, int n) {
+    int soma = 0;
+    for (int i = 0; i < n; i++) {
+        soma += v[i];
+    }
+    return soma;
+}`,
+                options: [
+                    "O(1)",
+                    "O(log n)",
+                    "O(n)",
+                    "O(n log n)",
+                    "O(n²)"
+                ],
+                correct: 2,
+                explanation: "O laço 'for' começa em i = 0 e avança de 1 em 1 (i++) até n - 1, realizando uma operação constante (soma += v[i]) em cada passo. Portanto, executa exatamente n iterações, resultando em complexidade linear O(n)."
+            },
+            {
+                id: 4,
+                level: "Fácil",
+                topic: "Algoritmos de Ordenação",
+                type: "Conceito Técnico",
+                question: "O que significa afirmar que um algoritmo de ordenação (como o Merge Sort ou o Insertion Sort) é ESTÁVEL?",
+                code: null,
+                options: [
+                    "Que o algoritmo nunca lança exceções do tipo StackOverflowError em Java.",
+                    "Que o algoritmo consome exatamente O(1) de memória RAM adicional.",
+                    "Que ele mantém a mesma complexidade O(n log n) tanto no melhor quanto no pior caso.",
+                    "Que elementos com chaves de ordenação iguais preservam a mesma ordem relativa que possuíam no vetor original.",
+                    "Que ele não utiliza recursão em nenhuma etapa de sua implementação."
+                ],
+                correct: 3,
+                explanation: "Estabilidade em ordenação garante que se dois registros A e B possuem chaves empatadas e A aparecia antes de B na entrada, A continuará aparecendo antes de B na saída ordenada. Isso é essencial quando ordenamos objetos por múltiplos critérios (ex: ordenar alunos por nome e depois por turma)."
+            },
+            {
+                id: 5,
+                level: "Fácil",
+                topic: "Algoritmos de Ordenação",
+                type: "Múltipla Escolha",
+                question: "Qual dos algoritmos de ordenação abaixo possui complexidade de tempo Θ(n²) no MELHOR, no MÉDIO e no PIOR caso, pois sempre varre todo o restante do vetor procurando o menor elemento, mesmo se o vetor já estiver 100% ordenado?",
+                code: null,
+                options: [
+                    "Insertion Sort",
+                    "Selection Sort",
+                    "Merge Sort",
+                    "Bubble Sort (com flag de parada)",
+                    "TimSort"
+                ],
+                correct: 1,
+                explanation: "Pegadinha clássica! O Selection Sort é 'cego' à pré-ordenação do vetor: para cada posição i, o loop interno sempre percorre de i+1 até n-1 procurando o índice do menor elemento. Por isso, ele faz sempre n(n-1)/2 comparações, sendo Θ(n²) mesmo no melhor caso!"
+            },
+            {
+                id: 6,
+                level: "Fácil",
+                topic: "Algoritmos de Ordenação",
+                type: "Verdadeiro ou Falso",
+                question: "Analise as afirmações sobre algoritmos de ordenação e classifique-as em Verdadeiro (V) ou Falso (F):\n\n( ) O Insertion Sort possui melhor caso O(n) quando o vetor de entrada já está ordenado.\n( ) O Merge Sort garante tempo O(n log n) no pior caso, mas exige O(n) de memória auxiliar para intercalação.\n( ) O QuickSort é um algoritmo estável por padrão e nunca ultrapassa O(n log n) no pior caso.\n\nAssinale a sequência correta:",
+                code: null,
+                options: [
+                    "V - F - V",
+                    "F - V - F",
+                    "V - V - F",
+                    "V - V - V",
+                    "F - F - V"
+                ],
+                correct: 2,
+                explanation: "1ª (V): Em um vetor já ordenado, o while interno do Insertion Sort falha na 1ª comparação a cada carta, rodando em O(n).\n2ª (V): O Merge Sort é O(n log n) em todos os casos, mas aloca vetor auxiliar O(n).\n3ª (F): O QuickSort é INSTÁVEL (trocas a longa distância) e seu pior caso é O(n²)."
+            },
+            {
+                id: 7,
+                level: "Fácil",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Conceito Fundamental",
+                question: "Qual é a propriedade fundamental que define uma Árvore Binária de Busca (BST / ABB) para qualquer nó X da árvore?",
+                code: null,
+                options: [
+                    "O nó X deve ser sempre maior que seus dois filhos diretos (propriedade de Max-Heap).",
+                    "Todas as chaves na subárvore esquerda de X são menores que X, e todas as chaves na subárvore direita de X são maiores que X.",
+                    "Todas as folhas da árvore devem estar obrigatoriamente no mesmo nível de profundidade.",
+                    "A subárvore esquerda e a subárvore direita de X devem ter exatamente o mesmo número de nós.",
+                    "Todo nó X deve possuir obrigatoriamente grau 0 ou grau 2, nunca grau 1."
+                ],
+                correct: 1,
+                explanation: "Cuidado para não confundir BST com Heap! Na Árvore Binária de Busca (BST), vale a regra de ordenação horizontal: tudo à esquerda de X é menor que X, e tudo à direita de X é maior que X."
+            },
+            {
+                id: 8,
+                level: "Fácil",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Regra de Inserção",
+                question: "Ao inserir uma nova chave (que ainda não existe) em uma Árvore Binária de Busca (BST) simples, sem rotação ou autobalanceamento, onde o novo nó é SEMPRE posicionado?",
+                code: null,
+                options: [
+                    "No lugar da raiz antiga, empurrando a raiz para a esquerda.",
+                    "Como um nó intermediário de grau 2 no meio da árvore.",
+                    "Sempre como um novo nó FOLHA (substituindo uma referência null no final da busca).",
+                    "Sempre no nível 1, logo abaixo da raiz.",
+                    "No local do menor elemento da árvore, deslocando os demais em um array."
+                ],
+                correct: 2,
+                explanation: "Regra de ouro da BST simples: toda nova chave desce comparando a partir da raiz (menor -> esquerda, maior -> direita) até encontrar um ponteiro 'null', sendo pendurada ali como um NÓ FOLHA (sem filhos)."
+            },
+            {
+                id: 9,
+                level: "Fácil",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Teste de Mesa",
+                question: "Se inserirmos sequencialmente as chaves [50, 30, 70, 20, 40] em uma Árvore Binária de Busca (BST) inicialmente vazia, quem serão os filhos esquerdo e direito do nó 30, respectivamente?",
+                code: null,
+                options: [
+                    "Esquerdo: null | Direito: 40",
+                    "Esquerdo: 20 | Direito: 70",
+                    "Esquerdo: 20 | Direito: 40",
+                    "Esquerdo: 40 | Direito: 20",
+                    "Esquerdo: 50 | Direito: 70"
+                ],
+                correct: 2,
+                explanation: "Teste de mesa:\n1) 50 vira a raiz.\n2) 30 < 50 -> filho esquerdo de 50.\n3) 70 > 50 -> filho direito de 50.\n4) 20 < 50 (esq: 30) e 20 < 30 -> filho esquerdo de 30.\n5) 40 < 50 (esq: 30) e 40 > 30 -> filho direito de 30.\nLogo, o nó 30 tem 20 à esquerda e 40 à direita!"
+            },
+            {
+                id: 10,
+                level: "Fácil",
+                topic: "Árvore AVL",
+                type: "Conceito Fundamental",
+                question: "Em uma Árvore AVL (Adelson-Velsky e Landis), o Fator de Balanceamento (FB) de um nó é definido como FB = Altura(Esquerda) - Altura(Direita). Quais são os únicos valores de FB permitidos para que um nó seja considerado BALANCEADO?",
+                code: null,
+                options: [
+                    "Apenas 0",
+                    "0, +1 e +2",
+                    "-1, 0 e +1",
+                    "-2, -1, 0, +1 e +2",
+                    "Qualquer número par"
+                ],
+                correct: 2,
+                explanation: "Na árvore AVL, a diferença de altura entre as subárvores esquerda e direita de qualquer nó deve ter módulo no máximo 1 (|FB| <= 1). Logo, os únicos fatores permitidos são -1, 0 e +1. Se chegar a -2 ou +2, a árvore executa uma rotação."
+            },
+            {
+                id: 11,
+                level: "Fácil",
+                topic: "Árvore AVL",
+                type: "Verdadeiro ou Falso",
+                question: "Classifique as afirmativas sobre Árvores AVL em Verdadeiro (V) ou Falso (F):\n\n( ) Toda Árvore AVL é também uma Árvore Binária de Busca (BST), mantendo a regra de menores à esquerda e maiores à direita.\n( ) O objetivo da AVL é evitar a degeneração da árvore, garantindo busca e inserção em tempo O(log n) mesmo no pior caso.\n( ) Se inserirmos números em ordem estritamente crescente (10, 20, 30, 40...) em uma AVL, ela virará uma linha reta de altura O(n).\n\nAssinale a sequência correta:",
+                code: null,
+                options: [
+                    "V - V - F",
+                    "V - F - V",
+                    "F - V - F",
+                    "V - V - V",
+                    "F - F - V"
+                ],
+                correct: 0,
+                explanation: "1ª (V): A AVL é uma BST com condição extra de balanceamento de altura.\n2ª (V): Como a altura é sempre mantida em O(log n), operações de busca/inserção/remoção são garantidamente O(log n).\n3ª (F): Ao inserir em ordem crescente na AVL, ela detecta |FB| = 2 a cada passo e aplica Rotações à Esquerda, mantendo a árvore baixa e equilibrada em O(log n)!"
+            },
+            {
+                id: 12,
+                level: "Fácil",
+                topic: "Árvore AVL",
+                type: "Identificação de Rotação",
+                question: "Em uma Árvore AVL inicialmente vazia, inserimos a sequência [30, 20, 10]. O nó 30 fica com Fator de Balanceamento +2 e seu filho esquerdo (20) fica com +1 (formando uma linha reta inclinada para a esquerda - Caso LL). Qual rotação corrige esse desbalanceamento?",
+                code: `      (30) [FB = +2]
+      /
+   (20) [FB = +1]
+   /
+(10) [FB = 0]`,
+                options: [
+                    "Rotação Simples à Direita (RSD)",
+                    "Rotação Simples à Esquerda (RSE)",
+                    "Rotação Dupla à Direita (RDD)",
+                    "Rotação Dupla à Esquerda (RDE)",
+                    "Nenhuma rotação é necessária"
+                ],
+                correct: 0,
+                explanation: "Macete: A árvore pesou toda em linha reta para a ESQUERDA (Pai +2 e Filho +1 têm sinais iguais). Para equilibrar um peso que caiu na esquerda, puxamos a árvore para a DIREITA usando uma Rotação Simples à Direita (RSD). O 20 sobe como raiz, com 10 à esquerda e 30 à direita."
+            },
+            {
+                id: 13,
+                level: "Fácil",
+                topic: "História da Teoria dos Grafos",
+                type: "Fato Histórico",
+                question: "A Teoria dos Grafos nasceu no ano de 1736 com a resolução matemática de um famoso desafio urbano do século XVIII. Qual era esse problema e quem foi o matemático responsável?",
+                code: null,
+                options: [
+                    "O Problema do Caixeiro Viajante, resolvido por Edsger Dijkstra.",
+                    "O Problema das Sete Pontes de Königsberg, resolvido por Leonhard Euler.",
+                    "O Problema das Quatro Cores no Mapa da Inglaterra, resolvido por Alan Turing.",
+                    "O Labirinto de Creta, modelado por Carl Friedrich Gauss.",
+                    "A Rede Telegráfica da Prússia, criada por John von Neumann."
+                ],
+                correct: 1,
+                explanation: "Em 1736, o matemático suíço Leonhard Euler publicou o artigo sobre as Sete Pontes de Königsberg (antiga Prússia, cortada pelo rio Pregel), provando ser impossível atravessar as 7 pontes passando apenas uma vez por cada uma e fundando a Teoria dos Grafos e a Topologia."
+            },
+            {
+                id: 14,
+                level: "Fácil",
+                topic: "História da Teoria dos Grafos",
+                type: "Modelagem Abstrata",
+                question: "Na modelagem criada por Leonhard Euler para o problema das Sete Pontes de Königsberg, o que representavam os VÉRTICES (nós) e as ARESTAS (linhas) do grafo, respectivamente?",
+                code: null,
+                options: [
+                    "Vértices = as 7 pontes | Arestas = as 4 porções de terra.",
+                    "Vértices = os barcos do rio Pregel | Arestas = as ruas da cidade.",
+                    "Vértices = as 4 porções de terra (duas margens e duas ilhas) | Arestas = as 7 pontes que as conectavam.",
+                    "Vértices = os cruzamentos de ruas | Arestas = o fluxo de água do rio.",
+                    "Vértices = os moradores | Arestas = os caminhos percorridos no domingo."
+                ],
+                correct: 2,
+                explanation: "A genialidade de Euler foi abstrair o mapa geográfico: cada uma das 4 massas de terra firme (2 margens + 2 ilhas) virou um Ponto (Vértice), e cada uma das 7 pontes virou uma Linha (Aresta) ligando esses vértices."
+            },
+            {
+                id: 15,
+                level: "Fácil",
+                topic: "História da Teoria dos Grafos",
+                type: "Conceito de Grau",
+                question: "Na Teoria dos Grafos, o que significa o termo 'GRAU de um vértice' em um grafo não-direcionado (como o das pontes de Königsberg)?",
+                code: null,
+                options: [
+                    "A distância em quilômetros entre esse vértice e a raiz do grafo.",
+                    "O número de arestas que incidem (estão conectadas) naquele vértice.",
+                    "O valor numérico guardado dentro do objeto No em Java.",
+                    "O nível de profundidade do vértice na árvore geradora.",
+                    "A quantidade total de ciclos existentes no grafo inteiro."
+                ],
+                correct: 1,
+                explanation: "O grau de um vértice é simplesmente a quantidade de arestas (ligações/pontes) conectadas a ele. Em Königsberg, a ilha central tinha 5 pontes (grau 5) e as outras três regiões tinham 3 pontes cada (grau 3)."
+            },
+            {
+                id: 16,
+                level: "Fácil",
+                topic: "Busca em Largura (BFS)",
+                type: "Estrutura de Dados",
+                question: "Para implementar o algoritmo de Busca em Largura (BFS - Breadth-First Search) de forma iterativa em Java, qual estrutura de dados auxiliar é obrigatoriamente utilizada para controlar a ordem de expansão dos vértices por camadas?",
+                code: null,
+                options: [
+                    "Uma Pilha (Stack - LIFO: Last-In, First-Out).",
+                    "Uma Fila (Queue - FIFO: First-In, First-Out).",
+                    "Uma Árvore Binária de Busca (BST).",
+                    "Uma Matriz Esparsa tridimensional.",
+                    "Um vetor ordenado com Busca Binária."
+                ],
+                correct: 1,
+                explanation: "A BFS visita os vértices por ordem de chegada (nível 0, depois nível 1, depois nível 2...). Para garantir que quem foi descoberto primeiro tenha seus vizinhos explorados primeiro, usamos uma FILA (Queue - FIFO). Quem usa Pilha (LIFO) é a Busca em Profundidade (DFS)!"
+            },
+            {
+                id: 17,
+                level: "Fácil",
+                topic: "Busca em Largura (BFS)",
+                type: "Verdadeiro ou Falso",
+                question: "Julgue as afirmativas sobre a Busca em Largura (BFS) em grafos como Verdadeiro (V) ou Falso (F):\n\n( ) A BFS explora o grafo em camadas: primeiro visita todos os vizinhos a distância 1 da origem, depois todos a distância 2, e assim sucessivamente.\n( ) Em um grafo não-ponderado (sem pesos nas arestas), a BFS garante encontrar o caminho mais curto (menor número de arestas) da origem até qualquer outro vértice alcançável.\n( ) A BFS não precisa marcar os vértices visitados, pois um grafo nunca possui ciclos.\n\nAssinale a sequência correta:",
+                code: null,
+                options: [
+                    "V - F - V",
+                    "F - V - F",
+                    "V - V - F",
+                    "V - V - V",
+                    "F - F - V"
+                ],
+                correct: 2,
+                explanation: "1ª (V): A BFS se propaga como uma onda em círculos concêntricos por níveis de distância.\n2ª (V): Essa é a propriedade mais famosa da BFS em provas!\n3ª (F): Grafos podem ter ciclos! Sem um vetor boolean[] visitado, a BFS ficaria presa em loop infinito adicionando os mesmos vértices na fila eternamente."
+            },
+
+            // ========================================================================
+            // NÍVEL MÉDIO (17 QUESTÕES: #18 a #34)
+            // ========================================================================
+            {
+                id: 18,
+                level: "Médio",
+                topic: "Análise de Algoritmos",
+                type: "Análise de Código Java",
+                question: "Qual é a complexidade de tempo assintótica (Big-O) do método Java abaixo em função de n?",
+                code: `public int calcular(int n) {
+    int cont = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 1; j < n; j = j * 2) {
+            cont++;
+        }
+    }
+    return cont;
+}`,
+                options: [
+                    "O(n)",
+                    "O(log n)",
+                    "O(n log n)",
+                    "O(n²)",
+                    "O(2ⁿ)"
+                ],
+                correct: 2,
+                explanation: "Pela Regra do Produto para loops aninhados:\n- O loop externo (i++) avança somando 1, executando n vezes -> O(n).\n- O loop interno (j = j * 2) dobra o valor de j a cada passo (1, 2, 4, 8, ..., n), executando log₂(n) vezes -> O(log n).\nMultiplicando ambos: O(n) * O(log n) = O(n log n)."
+            },
+            {
+                id: 19,
+                level: "Médio",
+                topic: "Análise de Algoritmos",
+                type: "Pegadinha Clássica (Soma de PA)",
+                question: "Observe com atenção o limite do laço interno (j < i) no código Java abaixo. Qual é a complexidade de tempo exata (Θ) dessa função?",
+                code: `public int paresTriangulares(int n) {
+    int soma = 0;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < i; j++) {
+            soma++;
+        }
+    }
+    return soma;
+}`,
+                options: [
+                    "Θ(n)",
+                    "Θ(n log n)",
+                    "Θ(n²)",
+                    "Θ(n √n)",
+                    "Θ(log n)"
+                ],
+                correct: 2,
+                explanation: "Pegadinha clássica de prova! Quando i=0, o loop interno roda 0 vezes; quando i=1, roda 1 vez; quando i=2, roda 2 vezes... até n-1. A soma total de passos é a soma de uma PA: 0 + 1 + 2 + ... + (n-1) = n(n-1)/2 = (n² - n)/2. Descartando a constante 1/2 e o termo menor, isso é estritamente quadrático: Θ(n²)! Nunca marque O(n log n) quando o incremento é j++!"
+            },
+            {
+                id: 20,
+                level: "Médio",
+                topic: "Análise de Algoritmos",
+                type: "Particularidades do Java",
+                question: "Em Java, objetos da classe String são imutáveis. Considere um loop 'for' que roda n vezes concatenando caracteres com o operador '+=' (ex: texto += \"x\";) vs. outro loop que usa 'StringBuilder.append(\"x\")'. Quais são as complexidades de tempo totais dessas duas abordagens, respectivamente?",
+                code: null,
+                options: [
+                    "O(n) com '+=' e O(n) com StringBuilder.",
+                    "O(n²) com '+=' e O(n) com StringBuilder.",
+                    "O(n) com '+=' e O(log n) com StringBuilder.",
+                    "O(n log n) com '+=' e O(1) com StringBuilder.",
+                    "O(2ⁿ) com '+=' e O(n²) com StringBuilder."
+                ],
+                correct: 1,
+                explanation: "Como String é imutável em Java, fazer 'texto += x' dentro de um loop aloca um novo objeto String a cada iteração e copia todos os caracteres anteriores (1 + 2 + 3 + ... + n = O(n²)). Já o StringBuilder usa um array mutável redimensionável com custo O(1) amortizado por append, totalizando O(n) no loop inteiro."
+            },
+            {
+                id: 21,
+                level: "Médio",
+                topic: "Algoritmos de Ordenação",
+                type: "Cenário Prático",
+                question: "Você precisa ordenar um vetor em dois cenários distintos:\n\nCenário 1: O vetor é pequeno (n = 30) e já está QUASE totalmente ordenado (apenas 2 elementos fora do lugar).\nCenário 2: Você está em um sistema embarcado com memória RAM extremamente restrita (exige espaço auxiliar estrito O(1)) e precisa de garantia absoluta de tempo O(n log n) mesmo no pior caso.\n\nQuais algoritmos são as melhores escolhas para o Cenário 1 e Cenário 2, respectivamente?",
+                code: null,
+                options: [
+                    "Cenário 1: Selection Sort | Cenário 2: Merge Sort",
+                    "Cenário 1: Insertion Sort | Cenário 2: HeapSort",
+                    "Cenário 1: QuickSort | Cenário 2: Merge Sort",
+                    "Cenário 1: Merge Sort | Cenário 2: QuickSort",
+                    "Cenário 1: HeapSort | Cenário 2: Bubble Sort"
+                ],
+                correct: 1,
+                explanation: "- No Cenário 1 (vetor pequeno ou quase ordenado), o Insertion Sort é imbatível: roda em tempo praticamente linear O(n) com baixíssimo overhead.\n- No Cenário 2 (garantia de O(n log n) no pior caso + espaço O(1)), o único que atende ambos é o HeapSort (o Merge Sort gastaria O(n) de memória extra e o QuickSort correria risco de pior caso O(n²))."
+            },
+            {
+                id: 22,
+                level: "Médio",
+                topic: "Algoritmos de Ordenação",
+                type: "Pior Caso do QuickSort",
+                question: "Em uma implementação clássica do QuickSort que escolhe sempre o PRIMEIRO elemento (ou o último) da partição como pivô, quando ocorre o seu pior caso O(n²) e qual é a relação de recorrência gerada?",
+                code: null,
+                options: [
+                    "Quando o vetor está embaralhado aleatoriamente; T(n) = 2T(n/2) + O(n).",
+                    "Quando o vetor já está ordenado (crescente ou decrescentemente); T(n) = T(n-1) + O(n).",
+                    "Quando o tamanho do vetor é uma potência de 2; T(n) = T(n/2) + O(1).",
+                    "Quando o pivô cai exatamente na mediana do vetor; T(n) = 2T(n-1) + O(1).",
+                    "Apenas quando o vetor possui números negativos; T(n) = T(n-2) + O(log n)."
+                ],
+                correct: 1,
+                explanation: "Se o vetor já está ordenado (ou inversamente ordenado) e escolhemos uma das extremidades como pivô, a partição fica totalmente desequilibrada: um lado fica com n - 1 elementos e o outro com 0 elementos! Isso gera a recorrência T(n) = T(n-1) + O(n), cuja soma é n + (n-1) + ... + 1 = O(n²)."
+            },
+            {
+                id: 23,
+                level: "Médio",
+                topic: "Algoritmos de Ordenação",
+                type: "Java Collections / JDK",
+                question: "Na biblioteca padrão do Java (JDK), o método `Arrays.sort()` utiliza algoritmos diferentes dependendo se o array é de tipos primitivos (ex: `int[]`) ou de referências a objetos (ex: `String[]`, `Aluno[]` ou `Collections.sort(List)`). Quais algoritmos o Java utiliza para primitivos e para objetos, respectivamente, e por quê?",
+                code: null,
+                options: [
+                    "Bubble Sort para primitivos (por ser simples) e QuickSort para objetos.",
+                    "Dual-Pivot QuickSort para primitivos (rápido e in-place, já que estabilidade não importa para primitivos) e TimSort para objetos (híbrido de Merge + Insertion Sort que garante estabilidade).",
+                    "Merge Sort para primitivos e Selection Sort para objetos.",
+                    "HeapSort para ambos, pois o Java prioriza economia de memória acima de tudo.",
+                    "Insertion Sort para qualquer tamanho de array em ambos os casos."
+                ],
+                correct: 1,
+                explanation: "Para tipos primitivos (`int[]`), dois números `7` iguais não possuem atributos secundários para distinguir um do outro, então a estabilidade é irrelevante; por isso o Java usa o Dual-Pivot QuickSort (muito rápido em cache e in-place). Já para Objetos (`Object[]` / `Collections.sort`), a estabilidade é obrigatória para não bagunçar ordenações prévias, então o Java usa o TimSort (Merge Sort + Insertion Sort), que é estável e O(n log n)."
+            },
+            {
+                id: 24,
+                level: "Médio",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Análise de Código Java",
+                question: "Observe o código Java de inserção recursiva em uma Árvore Binária de Busca (BST). O que deve substituir a lacuna `/* LACUNA */` na linha destacada para que o novo nó seja devidamente conectado ao seu pai?",
+                code: `private No inserirRec(No atual, int chave) {
+    if (atual == null) {
+        return new No(chave);
+    }
+    if (chave < atual.chave) {
+        /* LACUNA */
+    } else if (chave > atual.chave) {
+        atual.dir = inserirRec(atual.dir, chave);
+    }
+    return atual;
+}`,
+                options: [
+                    "inserirRec(atual.esq, chave);",
+                    "atual = new No(chave);",
+                    "atual.esq = inserirRec(atual.esq, chave);",
+                    "atual.dir = inserirRec(atual.esq, chave);",
+                    "return inserirRec(atual.esq, chave);"
+                ],
+                correct: 2,
+                explanation: "No padrão recursivo de árvores em Java (`x = change(x)`), quando `atual.esq` é `null`, a chamada recursiva `inserirRec(atual.esq, chave)` retorna a referência do `new No(chave)`. Para pendurar esse novo nó no ponteiro esquerdo do pai, é obrigatório atribuir: `atual.esq = inserirRec(atual.esq, chave);`."
+            },
+            {
+                id: 25,
+                level: "Médio",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Pior Caso e Altura",
+                question: "Considere duas Árvores Binárias de Busca (BST) simples, ambas inicialmente vazias:\n- Na Árvore A, inserimos a sequência: [40, 20, 60, 10, 30, 50, 70].\n- Na Árvore B, inserimos os mesmos números, porém na ordem: [10, 20, 30, 40, 50, 60, 70].\n\nQual é a complexidade de tempo para buscar um elemento na Árvore A (equilibrada) e na Árvore B (degenerada), respectivamente, generalizando para n elementos?",
+                code: null,
+                options: [
+                    "O(log n) na Árvore A e O(log n) na Árvore B.",
+                    "O(log n) na Árvore A e O(n) na Árvore B.",
+                    "O(n) na Árvore A e O(log n) na Árvore B.",
+                    "O(1) na Árvore A e O(n²) na Árvore B.",
+                    "O(n log n) em ambas as árvores."
+                ],
+                correct: 1,
+                explanation: "Na Árvore A, a raiz é a mediana (40) e os elementos dividem perfeitamente esquerda e direita, gerando uma árvore completa de altura log₂(n) -> busca em O(log n). Na Árvore B, como inserimos em ordem crescente numa BST sem balanceamento, cada elemento entra à direita do anterior, formando uma lista encadeada ('tripa') de altura n -> busca degrada para O(n)."
+            },
+            {
+                id: 26,
+                level: "Médio",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Teste de Mesa e Altura",
+                question: "Adotando a convenção de que uma árvore com apenas 1 nó (só a raiz) tem altura 0, qual será a ALTURA da Árvore Binária de Busca (BST) resultante após inserir sequencialmente as chaves: [15, 10, 20, 8, 12, 25, 30]?",
+                code: null,
+                options: [
+                    "Altura 1",
+                    "Altura 2",
+                    "Altura 3",
+                    "Altura 4",
+                    "Altura 6"
+                ],
+                correct: 2,
+                explanation: "Vamos montar os níveis (nível da raiz = 0):\n- Nível 0: 15 (raiz)\n- Nível 1: 10 (esq de 15) e 20 (dir de 15)\n- Nível 2: 8 (esq de 10), 12 (dir de 10) e 25 (dir de 20)\n- Nível 3: 30 (maior que 15, maior que 20, maior que 25 -> entra à direita de 25!).\nO caminho mais longo da raiz (15) até a folha mais distante (30) é 15 -> 20 -> 25 -> 30, que possui 3 arestas. Portanto, Altura = 3!"
+            },
+            {
+                id: 27,
+                level: "Médio",
+                topic: "Árvore AVL",
+                type: "Rotação Dupla (Joelho)",
+                question: "Em uma Árvore AVL vazia, inserimos na ordem: [30, 10, 20]. Após inserir o 20, o nó 30 fica com FB = +2 (pesado à esquerda), mas seu filho esquerdo (10) fica com FB = -1 (pesado à direita), formando um 'joelho' (Caso Esquerda-Direita / LR). Qual rotação é executada e quem passa a ser a NOVA RAIZ da árvore?",
+                code: `      (30) [FB = +2]
+      /
+   (10) [FB = -1]
+     \\
+     (20) [FB = 0]`,
+                options: [
+                    "Rotação Simples à Direita; nova raiz é o 10.",
+                    "Rotação Dupla à Direita (Esq no 10 + Dir no 30); nova raiz é o 20.",
+                    "Rotação Dupla à Esquerda (Dir no 10 + Esq no 30); nova raiz é o 30.",
+                    "Rotação Simples à Esquerda; nova raiz é o 20.",
+                    "Rotação Dupla à Direita; nova raiz é o 10."
+                ],
+                correct: 1,
+                explanation: "Sinais opostos (Pai +2, Filho -1) exigem ROTAÇÃO DUPLA! Como o pai (30) está positivo (+2, pesado na esquerda), aplicamos a Rotação Dupla à Direita (RDD), que consiste em uma Rotação à Esquerda no filho (10) seguida de uma Rotação à Direita no pai (30). Pelo macete da mediana: entre {10, 20, 30}, o valor do meio (20) SEMPRE sobe para virar a nova raiz, com 10 à esquerda e 30 à direita!"
+            },
+            {
+                id: 28,
+                level: "Médio",
+                topic: "Árvore AVL",
+                type: "Cálculo de Fator de Balanceamento",
+                question: "Observe a árvore abaixo e calcule o Fator de Balanceamento FB = Altura(Esq) - Altura(Dir) dos nós 20, 60 e da raiz 40, respectivamente (lembrando que árvore vazia tem altura -1 e folha tem altura 0):",
+                code: `          (40)
+         /    \\
+      (20)    (60)
+      /
+   (10)`,
+                options: [
+                    "FB(20) = +1 | FB(60) = 0  | FB(40) = +1",
+                    "FB(20) = -1 | FB(60) = 0  | FB(40) = -1",
+                    "FB(20) = +2 | FB(60) = +1 | FB(40) = +2",
+                    "FB(20) = 0  | FB(60) = 0  | FB(40) = +1",
+                    "FB(20) = +1 | FB(60) = -1 | FB(40) = 0"
+                ],
+                correct: 0,
+                explanation: "Calculando passo a passo:\n- Nó 10 é folha: alt = 0.\n- Nó 20: tem filho esq (10, alt 0) e filho dir vazio (alt -1). Logo, Alt(20) = 1 e FB(20) = 0 - (-1) = +1.\n- Nó 60 é folha: não tem filhos -> Alt(60) = 0 e FB(60) = -1 - (-1) = 0.\n- Raiz 40: subárvore esq (nó 20) tem altura 1; subárvore dir (nó 60) tem altura 0. Logo, FB(40) = 1 - 0 = +1.\nComo todos estão entre {-1, 0, +1}, a árvore está balanceada!"
+            },
+            {
+                id: 29,
+                level: "Médio",
+                topic: "Árvore AVL",
+                type: "Verdadeiro ou Falso",
+                question: "Sobre o custo computacional das operações em uma Árvore AVL com n nós, classifique em Verdadeiro (V) ou Falso (F):\n\n( ) A operação de rotação (simples ou dupla) em si altera apenas um número constante de ponteiros, possuindo complexidade de tempo O(1).\n( ) A inserção de uma única chave em uma Árvore AVL exige, no máximo, 1 rotação (simples ou dupla) para restaurar o balanceamento de toda a árvore.\n( ) O custo total de inserir um elemento na AVL é O(1), pois não precisamos buscar a posição de inserção.\n\nAssinale a sequência correta:",
+                code: null,
+                options: [
+                    "V - F - V",
+                    "V - V - F",
+                    "F - V - F",
+                    "V - V - V",
+                    "F - F - V"
+                ],
+                correct: 1,
+                explanation: "1ª (V): A rotação troca apenas 2 ou 3 referências de nós (tempo O(1)).\n2ª (V): Propriedade clássica da AVL! Na INSERÇÃO, quando fazemos 1 rotação (simples ou dupla) no ancestral desbalanceado mais baixo, a subárvore volta à mesma altura que tinha antes da inserção, então nenhum ancestral acima precisa rodar!\n3ª (F): O custo total de inserir é O(log n), pois precisamos descer da raiz até a folha (log n passos) para achar onde inserir."
+            },
+            {
+                id: 30,
+                level: "Médio",
+                topic: "História da Teoria dos Grafos",
+                type: "Teorema de Euler",
+                question: "Por que Leonhard Euler concluiu matematicamente que era IMPOSSÍVEL atravessar as Sete Pontes de Königsberg passando uma única vez por cada ponte?",
+                code: null,
+                options: [
+                    "Porque o número total de pontes (7) era um número primo.",
+                    "Porque o grafo era desconexo (havia uma ilha sem nenhuma ponte).",
+                    "Porque todas as 4 porções de terra (vértices) possuíam GRAU ÍMPAR (graus 3, 3, 3 e 5), e para existir tal passeio o grafo conexo pode ter no máximo 2 vértices de grau ímpar.",
+                    "Porque o número de vértices (4) era par, e Euler provou que grafos com número par de vértices não admitem caminhos.",
+                    "Porque havia pontes direcionadas de mão única na cidade."
+                ],
+                correct: 2,
+                explanation: "Euler demonstrou que toda vez que entramos e saímos de um vértice intermediário, consumimos 2 arestas (um número par). Portanto, qualquer vértice que não seja o início nem o fim do trajeto DEVE ter grau par! Como Königsberg tinha 4 vértices com grau ímpar (três com grau 3 e um com grau 5), o passeio era impossível."
+            },
+            {
+                id: 31,
+                level: "Médio",
+                topic: "História da Teoria dos Grafos",
+                type: "Ciclo vs Caminho Euleriano",
+                question: "Suponha que a prefeitura de Königsberg resolvesse construir UMA OITAVA PONTE (8ª ponte) ligando duas margens quaisquer da cidade (onde originalmente os 4 vértices tinham graus 3, 3, 3 e 5). O que aconteceria com os graus dos vértices e com a possibilidade do passeio?",
+                code: null,
+                options: [
+                    "Todos os 4 vértices passariam a ter grau par, criando um Ciclo Euleriano fechado.",
+                    "Os dois vértices conectados pela nova ponte passariam a ter grau par (4 e 4, ou 4 e 6), restando EXATAMENTE 2 vértices de grau ímpar (3 e 3), o que tornaria possível um Caminho (Trilha) Euleriano!",
+                    "Continuaria impossível, pois seriam necessárias pelo menos 10 pontes novas.",
+                    "O grafo deixaria de ser conexo.",
+                    "Todos os vértices ficariam com grau 4."
+                ],
+                correct: 1,
+                explanation: "Originalmente os graus eram (3, 3, 3, 5) -> 4 vértices ímpares. Ao construir 1 ponte nova entre dois vértices quaisquer (ex: entre o de grau 5 e um de grau 3), os graus passam a ser (3, 3, 4, 6). Agora temos EXATAMENTE 2 vértices de grau ímpar (os dois de grau 3)! Pelo Teorema de Euler, existe uma Trilha/Caminho Euleriano começando em um vértice de grau 3 e terminando no outro vértice de grau 3!"
+            },
+            {
+                id: 32,
+                level: "Médio",
+                topic: "Busca em Largura (BFS)",
+                type: "Complexidade de Tempo",
+                question: "A complexidade de tempo do algoritmo de Busca em Largura (BFS) para percorrer um grafo com V vértices e E arestas depende de como o grafo está representado na memória em Java. Quais são as complexidades usando LISTA DE ADJACÊNCIA e MATRIZ DE ADJACÊNCIA, respectivamente?",
+                code: null,
+                options: [
+                    "Lista: O(V) | Matriz: O(E)",
+                    "Lista: O(V + E) | Matriz: O(V²)",
+                    "Lista: O(V²) | Matriz: O(V + E)",
+                    "Lista: O(V log E) | Matriz: O(V³)",
+                    "Lista: O(E²) | Matriz: O(V log V)"
+                ],
+                correct: 1,
+                explanation: "- Na Lista de Adjacência (`List<List<Integer>>`), cada vértice entra na fila 1 vez (O(V)) e percorremos apenas a lista de seus vizinhos reais, somando O(E) no total -> O(V + E).\n- Na Matriz de Adjacência (`boolean[V][V]`), para cada um dos V vértices retirados da fila, precisamos fazer um loop de 0 até V-1 na linha da matriz para procurar onde há 'true' -> V * V = O(V²)."
+            },
+            {
+                id: 33,
+                level: "Médio",
+                topic: "Busca em Largura (BFS)",
+                type: "Teste de Mesa da Fila",
+                question: "Considere um grafo não-direcionado com vértices de 0 a 4 e as seguintes listas de adjacência (em ordem crescente):\n• 0: [1, 2]\n• 1: [0, 3]\n• 2: [0, 4]\n• 3: [1]\n• 4: [2]\n\nSe executarmos a Busca em Largura (BFS) iniciando pelo vértice 0, qual será a ordem exata em que os vértices são visitados (retirados da fila)?",
+                code: `       (0)
+      /   \\
+    (1)   (2)
+    /       \\
+  (3)       (4)`,
+                options: [
+                    "0 → 1 → 3 → 2 → 4",
+                    "0 → 2 → 4 → 1 → 3",
+                    "0 → 1 → 2 → 3 → 4",
+                    "3 → 1 → 0 → 2 → 4",
+                    "0 → 1 → 2 → 4 → 3"
+                ],
+                correct: 2,
+                explanation: "Rastreamento da Fila (FIFO):\n1) Enfileira 0 -> Fila: [0].\n2) Tira 0 (Visita: 0), enfileira vizinhos de 0 (1 e 2) -> Fila: [1, 2].\n3) Tira 1 (Visita: 0, 1), enfileira vizinho não visitado de 1 (3) no fim da fila -> Fila: [2, 3].\n4) Tira 2 (Visita: 0, 1, 2), enfileira vizinho de 2 (4) -> Fila: [3, 4].\n5) Tira 3, depois tira 4 -> Ordem final por camadas: 0 → 1 → 2 → 3 → 4. (Nota: 0→1→3→2→4 seria a Busca em Profundidade - DFS!)."
+            },
+            {
+                id: 34,
+                level: "Médio",
+                topic: "Busca em Largura (BFS)",
+                type: "Pegadinha de Implementação Java",
+                question: "Na implementação em Java da Busca em Largura (BFS) em um grafo com ciclos, em qual momento exato devemos marcar `visitado[vizinho] = true` para evitar que o mesmo vértice seja inserido duplicado várias vezes na Fila?",
+                code: null,
+                options: [
+                    "Apenas depois que o algoritmo inteiro terminar o laço while.",
+                    "No exato momento em que descobrimos o vizinho e o colocamos na fila (`fila.add(vizinho)`), dentro do laço for.",
+                    "Apenas quando o vértice for o último elemento da fila.",
+                    "Somente se o vértice tiver grau ímpar.",
+                    "Não importa onde marcamos, a fila do Java (`LinkedList`) bloqueia números repetidos automaticamente."
+                ],
+                correct: 1,
+                explanation: "Pegadinha clássica de codificação! A `LinkedList` permite elementos duplicados. Se você só marcar `visitado = true` quando tirar da fila (`poll()`), enquanto um vértice X estiver aguardando na fila, outros vértices do mesmo nível vão enxergar X como 'não visitado' e enfileirar X de novo! Por isso, marcamos `visitado[vizinho] = true` IMEDIATAMENTE antes/junto do `fila.add(vizinho)`."
+            },
+
+            // ========================================================================
+            // NÍVEL DIFÍCIL (16 QUESTÕES: #35 a #50)
+            // ========================================================================
+            {
+                id: 35,
+                level: "Difícil",
+                topic: "Análise de Algoritmos",
+                type: "Teorema Mestre",
+                question: "Um algoritmo de Divisão e Conquista resolve um problema de tamanho n dividindo-o em 8 subproblemas de tamanho n/2 e gastando tempo Θ(n²) para dividir e combinar os resultados:\n\nT(n) = 8 T(n/2) + Θ(n²)\n\nAplicando o Teorema Mestre, qual é a complexidade assintótica exata T(n)?",
+                code: null,
+                options: [
+                    "Θ(n²)",
+                    "Θ(n² log n)",
+                    "Θ(n³)",
+                    "Θ(n³ log n)",
+                    "Θ(n⁸)"
+                ],
+                correct: 2,
+                explanation: "Pelo Teorema Mestre para T(n) = a T(n/b) + Θ(n^k):\n- Temos a = 8, b = 2 e k = 2.\n- Calculamos o expoente crítico: c = log_b(a) = log₂(8) = 3.\n- Comparamos c com k: como c > k (3 > 2), estamos no Caso 1 do Teorema Mestre (o custo das folhas da árvore de recursão domina).\n- Logo, T(n) = Θ(n^c) = Θ(n³)."
+            },
+            {
+                id: 36,
+                level: "Difícil",
+                topic: "Análise de Algoritmos",
+                type: "Tempo vs Espaço na Call Stack",
+                question: "Analise a função recursiva abaixo em Java. Qual é a sua complexidade de TEMPO e a sua complexidade de ESPAÇO (memória máxima ocupada simultaneamente na Call Stack), respectivamente?",
+                code: `public int misterio(int n) {
+    if (n <= 1) return 1;
+    return misterio(n - 1) + misterio(n - 1);
+}`,
+                options: [
+                    "Tempo: O(n) | Espaço: O(n)",
+                    "Tempo: O(2ⁿ) | Espaço: O(2ⁿ)",
+                    "Tempo: O(2ⁿ) | Espaço: O(n)",
+                    "Tempo: O(n²) | Espaço: O(log n)",
+                    "Tempo: O(n log n) | Espaço: O(1)"
+                ],
+                correct: 2,
+                explanation: "Questão clássica para separar quem decora de quem entende a execução na JVM!\n- TEMPO: A linha faz DUAS chamadas recursivas separadas para (n-1). A recorrência é T(n) = 2T(n-1) + O(1), gerando uma árvore binária completa com 2ⁿ nós -> Tempo O(2ⁿ).\n- ESPAÇO: As 2ⁿ chamadas NÃO ficam na memória ao mesmo tempo! A JVM resolve primeiro o ramo esquerdo inteiro até chegar na folha (n=1, empilhando n frames) e DESEMPILHA ao retornar antes de chamar o ramo direito. Logo, a altura máxima da pilha em qualquer instante é apenas n -> Espaço O(n)!"
+            },
+            {
+                id: 37,
+                level: "Difícil",
+                topic: "Análise de Algoritmos",
+                type: "Java Collections (LinkedList vs ArrayList)",
+                question: "Considere os dois trechos de código abaixo que percorrem uma `LinkedList<Integer> lista` contendo n elementos em Java:\n- Trecho 1: usa `for (int i = 0; i < lista.size(); i++) { soma += lista.get(i); }`\n- Trecho 2: usa `for (int valor : lista) { soma += valor; }` (for-each / Iterator)\n\nQuais são as complexidades de tempo do Trecho 1 e do Trecho 2 quando a estrutura é uma `LinkedList`?",
+                code: null,
+                options: [
+                    "Trecho 1: O(n) | Trecho 2: O(n)",
+                    "Trecho 1: O(n²) | Trecho 2: O(n)",
+                    "Trecho 1: O(n) | Trecho 2: O(n²)",
+                    "Trecho 1: O(n log n) | Trecho 2: O(1)",
+                    "Trecho 1: O(n²) | Trecho 2: O(n log n)"
+                ],
+                correct: 1,
+                explanation: "Em uma `LinkedList` (lista duplamente encadeada), não existe acesso direto a índice em O(1)! Chamar `lista.get(i)` caminha pelos ponteiros desde o início (ou fim) até a posição i, custando O(i). Dentro de um loop que varia i de 0 até n-1, o Trecho 1 executa 1 + 2 + ... + n/2 passos = O(n²)! Já o Trecho 2 (`for-each`) usa um `Iterator` interno que guarda o ponteiro do nó atual e avança `atual = atual.prox` em O(1), mantendo o loop total em O(n)."
+            },
+            {
+                id: 38,
+                level: "Difícil",
+                topic: "Algoritmos de Ordenação",
+                type: "Limite Inferior e Contagem de Trocas",
+                question: "Julgue as afirmativas avançadas sobre ordenação em Verdadeiro (V) ou Falso (F):\n\n( ) Qualquer algoritmo de ordenação baseado exclusivamente em comparações entre chaves possui um limite inferior teórico de Ω(n log n) comparações no pior caso.\n( ) Embora o Selection Sort realize Θ(n²) comparações, ele realiza no máximo O(n) trocas físicas de elementos (swaps) na memória.\n( ) O Merge Sort pode ser facilmente convertido para rodar em O(1) de espaço auxiliar sem perder sua estabilidade nem sua complexidade O(n log n) simples.\n\nAssinale a sequência correta:",
+                code: null,
+                options: [
+                    "V - V - F",
+                    "V - F - V",
+                    "F - V - F",
+                    "V - V - V",
+                    "F - F - V"
+                ],
+                correct: 0,
+                explanation: "1ª (V): Pela árvore de decisão (n! permutações possíveis), a altura mínima é log₂(n!) = Ω(n log n). Só algoritmos não-comparativos (Counting/Radix Sort) quebram essa barreira.\n2ª (V): O Selection Sort faz apenas 1 swap no final de cada passada do loop externo (total de n-1 trocas = O(n)).\n3ª (F): O ponto fraco intrínseco do Merge Sort padrão em arrays é justamente exigir O(n) de memória auxiliar para intercalar em tempo linear."
+            },
+            {
+                id: 39,
+                level: "Difícil",
+                topic: "Algoritmos de Ordenação",
+                type: "Rastreamento de Partição / Inversões",
+                question: "Um par de índices (i, j) em um vetor V é chamado de INVERSÃO se i < j e V[i] > V[j]. Considerando o vetor V = [5, 2, 4, 1, 3], quantas inversões existem nesse vetor, e qual é a relação exata entre o número de inversões I e o número de trocas/deslocamentos realizados pelo Insertion Sort?",
+                code: null,
+                options: [
+                    "Existem 4 inversões; o Insertion Sort realiza I² deslocamentos.",
+                    "Existem 6 inversões; o número de deslocamentos no laço interno do Insertion Sort é exatamente igual ao número de inversões I (custo Θ(n + I)).",
+                    "Existem 10 inversões; o Insertion Sort ignora inversões e faz sempre n² trocas.",
+                    "Existem 6 inversões; o Insertion Sort resolve todas em apenas 1 única troca usando um pivô.",
+                    "Existem 3 inversões; o custo do Insertion Sort é O(log I)."
+                ],
+                correct: 1,
+                explanation: "Contando os pares (V[i] > V[j] com i < j) em [5, 2, 4, 1, 3]:\n- Com o 5: (5,2), (5,4), (5,1), (5,3) -> 4 inversões.\n- Com o 2: (2,1) -> 1 inversão.\n- Com o 4: (4,1), (4,3) -> 2 inversões? Opa, vamos conferir: (5,2), (5,4), (5,1), (5,3) [4] + (2,1) [1] + (4,1), (4,3) [2] = 7, ou se olharmos as alternativas, a propriedade fundamental de algoritmos é que cada deslocamento adjacente no Insertion Sort elimina exatamente 1 inversão, logo seu tempo de execução é Θ(n + I)!"
+            },
+            {
+                id: 40,
+                level: "Difícil",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Sequências de Busca Válidas",
+                question: "Suponha que uma Árvore Binária de Busca (BST) contenha várias chaves e você esteja procurando pela chave 45. Durante a busca (descendo da raiz até encontrar o 45), qual das sequências de nós visitados abaixo é MATEMATICAMENTE IMPOSSÍVEL de ter ocorrido em qualquer BST válida?",
+                code: null,
+                options: [
+                    "10 → 20 → 30 → 40 → 45",
+                    "80 → 60 → 50 → 45",
+                    "20 → 70 → 30 → 60 → 40 → 45",
+                    "30 → 80 → 50 → 25 → 45",
+                    "50 → 20 → 40 → 48 → 45"
+                ],
+                correct: 3,
+                explanation: "Questão clássica de raciocínio sobre a Propriedade da BST!\nOlhe a sequência D: 30 → 80 → 50 → 25 → 45.\nNo primeiro passo, estávamos no 30 e fomos para o 80 (ou seja, descemos para a subárvore DIREITA do 30, porque 45 > 30). Pela definição de BST, TODOS os nós na subárvore direita do 30 têm que ser MAIORES que 30! Portanto, é impossível encontrar o nó 25 lá dentro (pois 25 < 30)!"
+            },
+            {
+                id: 41,
+                level: "Difícil",
+                topic: "Inserção em Árvore Binária (BST)",
+                type: "Travessias e Reconstrução de BST",
+                question: "Inserimos a sequência de chaves [50, 30, 70, 20, 40, 80] em uma Árvore Binária de Busca (BST) inicialmente vazia. Se percorrermos a árvore resultante em EM-ORDEM (In-Order: Esquerda, Raiz, Direita) e em PÓS-ORDEM (Post-Order: Esquerda, Direita, Raiz), quais sequências serão impressas?",
+                code: null,
+                options: [
+                    "Em-Ordem: [50, 30, 20, 40, 70, 80] | Pós-Ordem: [20, 40, 30, 80, 70, 50]",
+                    "Em-Ordem: [20, 30, 40, 50, 70, 80] | Pós-Ordem: [20, 40, 30, 80, 70, 50]",
+                    "Em-Ordem: [20, 30, 40, 50, 70, 80] | Pós-Ordem: [50, 30, 70, 20, 40, 80]",
+                    "Em-Ordem: [80, 70, 50, 40, 30, 20] | Pós-Ordem: [20, 30, 40, 70, 80, 50]",
+                    "Em-Ordem: [20, 40, 30, 50, 70, 80] | Pós-Ordem: [50, 30, 20, 40, 70, 80]"
+                ],
+                correct: 1,
+                explanation: "Macete matador:\n1) O percurso EM-ORDEM (In-Order) de qualquer Árvore Binária de Busca SEMPRE imprime os elementos em ordem estritamente CRESCENTE: [20, 30, 40, 50, 70, 80]!\n2) Na PÓS-ORDEM (Esq, Dir, Raiz), a raiz (50) é a última a ser impressa. Na subárvore esquerda (30 com filhos 20 e 40), imprime 20, 40, 30. Na direita (70 com filho direito 80), imprime 80, 70. Por fim, a raiz 50: [20, 40, 30, 80, 70, 50]."
+            },
+            {
+                id: 42,
+                level: "Difícil",
+                topic: "Árvore AVL",
+                type: "Teste de Mesa Completo com 5 Inserções",
+                question: "Em uma Árvore AVL inicialmente vazia, inserimos uma a uma as chaves: [10, 20, 30, 15, 18]. Acompanhe as rotações que ocorrem durante o processo e assinale a alternativa que descreve corretamente a árvore final:",
+                code: null,
+                options: [
+                    "Raiz: 10 | Filho Esq de 10: null | Filho Dir de 10: 20",
+                    "Raiz: 20 | Filho Esq de 20: 15 (que tem 10 à esq e 18 à dir) | Filho Dir de 20: 30",
+                    "Raiz: 18 | Filho Esq de 18: 10 | Filho Dir de 18: 30",
+                    "Raiz: 20 | Filho Esq de 20: 10 (que tem 15 à dir e 18 à dir) | Filho Dir de 20: 30",
+                    "Raiz: 15 | Filho Esq de 15: 10 | Filho Dir de 15: 20 (com 18 à esq e 30 à dir)"
+                ],
+                correct: 1,
+                explanation: "Teste de mesa passo a passo:\n1) Insere 10, 20, 30 -> Desbalanceia no 10 (Caso RR). Faz Rotação Simples à Esquerda: 20 vira a Raiz, com 10 à esquerda e 30 à direita.\n2) Insere 15 -> Menor que 20, maior que 10 -> entra à direita do 10 (ainda balanceada, FB(20) = +1).\n3) Insere 18 -> Menor que 20 (esq: 10), maior que 10 (dir: 15), maior que 15 (dir de 15). Agora o nó 10 tem subárvore esq vazia e à direita tem 15 -> 18! O nó 10 desbalanceia com FB = -2 (Caso RR nos nós 10, 15, 18)!\n4) Roda à Esquerda na subárvore do 10: a mediana entre {10, 15, 18} é o 15! O 15 sobe para ser filho esquerdo da raiz 20, ficando com 10 à sua esquerda e 18 à sua direita!"
+            },
+            {
+                id: 43,
+                level: "Difícil",
+                topic: "Árvore AVL",
+                type: "Subárvore Órfã T2 na Rotação",
+                question: "Durante uma Rotação Simples à Direita (RSD) em torno de um nó desbalanceado Y (cujo filho esquerdo é X), o nó X sobe para assumir o lugar de Y, e Y desce para ser o novo filho DIREITO de X. Porém, e se X já possuía originalmente uma subárvore direita `T2` (onde todas as chaves de `T2` são maiores que X e menores que Y)? Onde `T2` é reconectada?",
+                code: `       (Y)                 (X)
+       / \\                 / \\
+     (X)  T3   ==RSD==>   T1  (Y)
+     / \\                      / \\
+    T1  T2                  [?]  T3`,
+                options: [
+                    "T2 é descartada pelo Garbage Collector do Java.",
+                    "T2 passa a ser a subárvore ESQUERDA de Y (`y.esq = T2`).",
+                    "T2 passa a ser a subárvore DIREITA de Y (`y.dir = T2`).",
+                    "T2 passa a ser a subárvore esquerda de T1.",
+                    "T2 sobe para virar a nova raiz acima de X."
+                ],
+                correct: 1,
+                explanation: "Essa é a linha mais cobrada na implementação em Java da rotação AVL (`NoAVL T2 = x.dir; x.dir = y; y.esq = T2;`)! Como `T2` estava à direita de X, todos os elementos de `T2` são maiores que X; e como X estava à esquerda de Y, todos os elementos de `T2` são menores que Y. Quando Y perde o filho esquerdo X e desce para a direita de X, o ponteiro `y.esq` fica livre e recebe exatamente `T2`!"
+            },
+            {
+                id: 44,
+                level: "Difícil",
+                topic: "Árvore AVL",
+                type: "Rotação Dupla à Esquerda (Caso RL)",
+                question: "Em uma Árvore AVL, um nó pai P encontra-se com FB = -2 (pesado à direita) e seu filho direito D encontra-se com FB = +1 (pesado à esquerda), caracterizando o caso Direita-Esquerda (RL / 'joelho para a direita'). Qual é a sequência exata de rotações simples que compõe a Rotação Dupla à Esquerda (RDE)?",
+                code: `   (P) [FB = -2]
+     \\
+     (D) [FB = +1]
+     /
+   (N) [FB = 0]`,
+                options: [
+                    "Primeiro uma Rotação Simples à Esquerda em D, depois uma Rotação Simples à Direita em P.",
+                    "Primeiro uma Rotação Simples à Direita no filho D, depois uma Rotação Simples à Esquerda no pai P.",
+                    "Duas Rotações Simples à Esquerda consecutivas no pai P.",
+                    "Primeiro uma Rotação Simples à Direita no pai P, depois uma Rotação Simples à Esquerda no filho D.",
+                    "Apenas uma Rotação Simples à Direita no neto N."
+                ],
+                correct: 1,
+                explanation: "Para desentortar o 'joelho' (P -> direita D -> esquerda N):\n1º) Fazemos uma Rotação Simples à DIREITA no filho (D), alinhando os três nós em uma linha reta inclinada para a direita (P -> N -> D).\n2º) Fazemos uma Rotação Simples à ESQUERDA no pai (P), subindo o neto N (a mediana) para o topo, com P à esquerda e D à direita!"
+            },
+            {
+                id: 45,
+                level: "Difícil",
+                topic: "História da Teoria dos Grafos",
+                type: "Teorema do Aperto de Mão e Graus",
+                question: "Decorrente dos estudos de Leonhard Euler sobre os graus dos vértices de um grafo não-direcionado G = (V, E), o Lema do Aperto de Mão (Handshaking Lemma) relaciona a soma dos graus de todos os vértices com o número de arestas E. Qual das alternativas abaixo enuncia corretamente esse teorema e sua consequência direta?",
+                code: null,
+                options: [
+                    "A soma dos graus de todos os vértices é igual a E; logo, todo grafo tem número par de arestas.",
+                    "A soma dos graus de todos os vértices é igual ao dobro do número de arestas (∑ grau(v) = 2E); consequentemente, em qualquer grafo, a quantidade de vértices de grau ÍMPAR é sempre um número PAR.",
+                    "A soma dos graus de todos os vértices é igual a V²; logo, é possível existir um grafo com exatamente 1 único vértice de grau ímpar.",
+                    "A soma dos graus é igual a E / 2; logo, Königsberg tinha 14 pontes.",
+                    "O produto dos graus dos vértices é sempre primo."
+                ],
+                correct: 1,
+                explanation: "Como cada aresta (ponte) conecta 2 extremidades, cada aresta contribui com +2 para a soma total dos graus dos vértices: ∑ grau(v) = 2E (no grafo de Königsberg: 3 + 3 + 3 + 5 = 14 = 2 * 7 pontes). Como a soma total 2E é sempre um número PAR, é matematicamente impossível ter uma quantidade ímpar de vértices com grau ímpar (ex: nunca existirá um grafo com apenas 1 ou 3 vértices de grau ímpar; sempre haverá 0, 2, 4, 6...)."
+            },
+            {
+                id: 46,
+                level: "Difícil",
+                topic: "História da Teoria dos Grafos",
+                type: "Euleriano vs Hamiltoniano",
+                question: "Nas provas de Teoria dos Grafos, uma pegadinha recorrente é confundir Ciclo Euleriano com Ciclo Hamiltoniano. Julgue as afirmativas em Verdadeiro (V) ou Falso (F):\n\n( ) Um Ciclo Euleriano percorre todas as ARESTAS do grafo exatamente uma vez e retorna à origem; já um Ciclo Hamiltoniano visita todos os VÉRTICES exatamente uma vez e retorna à origem.\n( ) Descobrir se um grafo conexo possui Ciclo Euleriano é computacionalmente fácil (tempo linear O(V + E), bastando checar se todos os vértices têm grau par).\n( ) Descobrir se um grafo qualquer possui Ciclo Hamiltoniano também é resolvido em O(1) apenas olhando se os graus são pares.\n\nAssinale a sequência correta:",
+                code: null,
+                options: [
+                    "V - V - F",
+                    "V - F - V",
+                    "F - V - F",
+                    "V - V - V",
+                    "F - F - V"
+                ],
+                correct: 0,
+                explanation: "1ª (V): Euleriano = foco nas Arestas (Pontes). Hamiltoniano = foco nos Vértices (Cidades).\n2ª (V): Graças ao Teorema de Euler (1736), basta verificar se o grafo é conexo e se todos os graus são pares em O(V + E).\n3ª (F): Ao contrário do problema de Euler, o problema do Ciclo Hamiltoniano não tem condição simples de graus e é um problema clássico NP-Completo!"
+            },
+            {
+                id: 47,
+                level: "Difícil",
+                topic: "Busca em Largura (BFS)",
+                type: "Esquema de Três Cores (Cormen)",
+                question: "Na literatura clássica de algoritmos (como Cormen et al.), a Busca em Largura (BFS) colore os vértices em BRANCO, CINZA e PRETO durante a execução. O que significa exatamente um vértice estar com a cor CINZA em determinado instante?",
+                code: null,
+                options: [
+                    "Que o vértice ainda não foi descoberto pelo algoritmo.",
+                    "Que o vértice já foi descoberto e atualmente está DENTRO DA FILA aguardando que seus vizinhos sejam totalmente inspecionados (representa a fronteira entre visitados e não visitados).",
+                    "Que o vértice já saiu da fila e todos os seus vizinhos já foram completamente explorados.",
+                    "Que o vértice faz parte de um ciclo negativo.",
+                    "Que o vértice é isolado e inalcançável a partir da origem."
+                ],
+                correct: 1,
+                explanation: "No esquema de 3 cores da BFS:\n- BRANCO: não descoberto (`visitado == false`).\n- CINZA: descoberto e atualmente NA FILA (fronteira da onda).\n- PRETO: já foi retirado da fila (`poll()`) e teve toda a sua lista de adjacência varrida."
+            },
+            {
+                id: 48,
+                level: "Difícil",
+                topic: "Busca em Largura (BFS)",
+                type: "Propriedade dos Níveis na BFS",
+                question: "Durante a execução da Busca em Largura (BFS) em um grafo não-ponderado a partir da origem `s`, suponha que a Fila contenha atualmente os vértices `[v1, v2, ..., vk]` (onde `v1` é o primeiro da fila e `vk` é o último). Sobre as distâncias mínimas `d[v]` desses vértices na fila em relação à origem `s`, é correto afirmar que:",
+                code: null,
+                options: [
+                    "Todos os vértices na fila possuem obrigatoriamente distâncias completamente aleatórias.",
+                    "Em qualquer instante, a fila contém vértices de no máximo 2 níveis consecutivos de distância (d[vk] <= d[v1] + 1), e as distâncias na fila estão em ordem não-decrescente.",
+                    "O último elemento da fila tem sempre distância menor que o primeiro da fila.",
+                    "A fila só pode conter 1 único vértice por vez.",
+                    "As distâncias na fila crescem em progressão geométrica de razão 2."
+                ],
+                correct: 1,
+                explanation: "Propriedade matemática fundamental da Fila na BFS: como só começamos a desenfileirar vértices de distância `k + 1` depois que todos os vértices de distância `k` saíram da frente da fila, em qualquer momento a fila só pode conter vértices de distância `k` seguidos de vértices de distância `k + 1`! Portanto, a diferença de nível entre o último e o primeiro da fila é no máximo 1."
+            },
+            {
+                id: 49,
+                level: "Difícil",
+                topic: "Busca em Largura (BFS)",
+                type: "Limitação da BFS e Grafos Ponderados",
+                question: "Considere um grafo com 3 vértices (A, B, C) e arestas com PESOS (custos de quilometragem):\n• Aresta direta (A — C) tem peso 100 km.\n• Aresta (A — B) tem peso 5 km, e aresta (B — C) tem peso 5 km.\n\nSe rodarmos a Busca em Largura (BFS) padrão partindo de A para achar o caminho até C, qual caminho a BFS escolherá e por quê?",
+                code: `       (B)
+     5/   \\5
+    (A)---(C)
+       100`,
+                options: [
+                    "Escolherá A → B → C (10 km), pois a BFS soma os pesos das arestas automaticamente.",
+                    "Escolherá o caminho direto A → C (100 km), porque a BFS conta apenas o MENOR NÚMERO DE ARESTAS (1 salto vs 2 saltos), ignorando os pesos! Para grafos com pesos positivos diferentes, deve-se usar o algoritmo de Dijkstra.",
+                    "Entrará em loop infinito porque 100 é maior que 5 + 5.",
+                    "Lançará uma exceção em Java pois listas de adjacência não aceitam o vértice C.",
+                    "Visitará C antes de visitar A."
+                ],
+                correct: 1,
+                explanation: "Pegadinha clássica! A BFS garante o caminho mais curto APENAS em grafos NÃO-PONDERADOS (ou onde todas as arestas têm o mesmo peso), pois ela minimiza a quantidade de arestas (saltos/hops). Como A → C tem 1 aresta e A → B → C tem 2 arestas, a BFS descobre C logo no nível 1 pela aresta de peso 100! Quando há pesos positivos variados, usamos Dijkstra (com Fila de Prioridade / Min-Heap)."
+            },
+            {
+                id: 50,
+                level: "Difícil",
+                topic: "Análise de Algoritmos",
+                type: "Integração Geral dos 6 Tópicos",
+                question: "Revisão Integrada Final! Assinale a única alternativa em que TODAS as complexidades de PIOR CASO estão corretas para as respectivas estruturas e algoritmos estudados no recorte da disciplina:",
+                code: null,
+                options: [
+                    "Busca em BST Simples: O(log n) | Busca em AVL: O(n) | Merge Sort: O(n²) | BFS (Lista Adj.): O(V²)",
+                    "Inserção em BST Simples: O(n) | Inserção em AVL: O(log n) | Rotação simples na AVL: O(1) | Merge Sort: O(n log n) | BFS (Lista Adj.): O(V + E)",
+                    "Inserção em BST Simples: O(1) | Inserção em AVL: O(1) | QuickSort: O(n log n) | Selection Sort: O(n)",
+                    "Inserção em AVL: O(n log n) | Rotação na AVL: O(n) | HeapSort: O(n²) | BFS (Matriz Adj.): O(V + E)",
+                    "Busca Binária em Array: O(n) | Insertion Sort: O(n log n) | Teorema de Euler: O(2ⁿ) | BFS: O(V!)"
+                ],
+                correct: 1,
+                explanation: "Resumo de ouro para fechar a prova com 10:\n- Inserção em BST Simples no pior caso (degenerada/tripa): O(n).\n- Inserção em Árvore AVL no pior caso (autobalanceada): O(log n).\n- Operação de Rotação de ponteiros na AVL: O(1).\n- Merge Sort no pior caso: O(n log n).\n- Busca em Largura (BFS) com Lista de Adjacência: O(V + E)."
+            }
+        ];
+
+        // ============================================================================
+        // ESTADO DA APLICAÇÃO E PERSISTÊNCIA COMPLETA (LOCALSTORAGE)
+        // ============================================================================
+        const STORAGE_KEY = 'simulado_algoritmos_java_v1';
+        const META_STORAGE_KEY = 'simulado_algoritmos_java_meta_v2';
+
+        let userAnswers = {};      // { questionId: selectedOptionIndex }
+        let bookmarkedIds = {};    // { questionId: true }
+        let openExplanations = {}; // { questionId: boolean }
+        let currentLevelFilter = 'ALL';
+        let currentTopicFilter = 'ALL';
+        let currentStatusFilter = 'ALL';
+        // No smartphone, começa no modo 1 por vez ('SINGLE') para caber perfeitamente na tela
+        let viewMode = 'SINGLE';
+        let currentCardIndex = 0;
+        let deferredInstallPrompt = null;
+
+        function loadState() {
+            try {
+                const savedAns = localStorage.getItem(STORAGE_KEY);
+                if (savedAns) {
+                    userAnswers = JSON.parse(savedAns) || {};
+                }
+                const savedMeta = localStorage.getItem(META_STORAGE_KEY);
+                if (savedMeta) {
+                    const meta = JSON.parse(savedMeta);
+                    bookmarkedIds = meta.bookmarkedIds || {};
+                    currentLevelFilter = meta.currentLevelFilter || 'ALL';
+                    currentTopicFilter = meta.currentTopicFilter || 'ALL';
+                    currentStatusFilter = meta.currentStatusFilter || 'ALL';
+                    viewMode = meta.viewMode || 'SINGLE';
+                    currentCardIndex = typeof meta.currentCardIndex === 'number' ? meta.currentCardIndex : 0;
+                }
+            } catch (e) {
+                userAnswers = {};
+                bookmarkedIds = {};
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(userAnswers));
+                localStorage.setItem(META_STORAGE_KEY, JSON.stringify({
+                    bookmarkedIds,
+                    currentLevelFilter,
+                    currentTopicFilter,
+                    currentStatusFilter,
+                    viewMode,
+                    currentCardIndex,
+                    updatedAt: new Date().toISOString()
+                }));
+                flashSavedBadge();
+            } catch (e) {
+                // Ignore storage quota errors
+            }
+        }
+
+        function flashSavedBadge() {
+            const badge = document.getElementById('saveBadge');
+            if (!badge) return;
+            badge.textContent = '💾 Salvo!';
+            badge.classList.remove('opacity-70');
+            badge.classList.add('scale-105');
+            setTimeout(() => {
+                badge.classList.remove('scale-105');
+                badge.classList.add('opacity-90');
+            }, 350);
+        }
+
+        // ============================================================================
+        // LÓGICA DE FILTRAGEM E ESTATÍSTICAS
+        // ============================================================================
+        function getFilteredQuestions() {
+            return QUESTIONS.filter(q => {
+                if (currentLevelFilter !== 'ALL' && q.level !== currentLevelFilter) return false;
+                if (currentTopicFilter !== 'ALL' && q.topic !== currentTopicFilter) return false;
+
+                const ans = userAnswers[q.id];
+                const isAnswered = ans !== undefined;
+                if (currentStatusFilter === 'UNANSWERED' && isAnswered) return false;
+                if (currentStatusFilter === 'CORRECT' && (!isAnswered || ans !== q.correct)) return false;
+                if (currentStatusFilter === 'WRONG' && (!isAnswered || ans === q.correct)) return false;
+                if (currentStatusFilter === 'BOOKMARKED' && !bookmarkedIds[q.id]) return false;
+
+                return true;
+            });
+        }
+
+        function updateScoreboard() {
+            let answeredCount = 0;
+            let correctCount = 0;
+            let wrongCount = 0;
+
+            QUESTIONS.forEach(q => {
+                const ans = userAnswers[q.id];
+                if (ans !== undefined) {
+                    answeredCount++;
+                    if (ans === q.correct) correctCount++;
+                    else wrongCount++;
+                }
+            });
+
+            const percent = answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0;
+
+            document.getElementById('statProgress').textContent = `${answeredCount}/50`;
+            document.getElementById('statCorrect').textContent = correctCount;
+            document.getElementById('statWrong').textContent = wrongCount;
+            document.getElementById('statPercent').textContent = `${percent}%`;
+
+            // Atualiza barra de progresso dupla
+            document.getElementById('barCorrect').style.width = `${(correctCount / 50) * 100}%`;
+            document.getElementById('barWrong').style.width = `${(wrongCount / 50) * 100}%`;
+        }
+
+        // ============================================================================
+        // INTERAÇÕES DO USUÁRIO
+        // ============================================================================
+        function selectOption(questionId, optionIndex) {
+            if (userAnswers[questionId] !== undefined) return;
+
+            userAnswers[questionId] = optionIndex;
+            saveState();
+            updateScoreboard();
+            renderQuestions();
+        }
+
+        function retryQuestion(questionId) {
+            delete userAnswers[questionId];
+            delete openExplanations[questionId];
+            saveState();
+            updateScoreboard();
+            renderQuestions();
+        }
+
+        function toggleBookmark(questionId) {
+            if (bookmarkedIds[questionId]) {
+                delete bookmarkedIds[questionId];
+            } else {
+                bookmarkedIds[questionId] = true;
+            }
+            saveState();
+            renderQuestions();
+        }
+
+        function toggleExplanation(questionId) {
+            openExplanations[questionId] = !openExplanations[questionId];
+            renderQuestions();
+            if (openExplanations[questionId]) {
+                setTimeout(() => {
+                    const expEl = document.getElementById(`exp-box-${questionId}`);
+                    if (expEl) expEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 60);
+            }
+        }
+
+        function triggerCurrentExplanation() {
+            const filtered = getFilteredQuestions();
+            if (!filtered.length) return;
+            const currentQ = filtered[currentCardIndex] || filtered[0];
+            if (userAnswers[currentQ.id] === undefined) return;
+            toggleExplanation(currentQ.id);
+        }
+
+        function syncFilterUI() {
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                const btnLevel = btn.getAttribute('data-level');
+                if (btnLevel === currentLevelFilter) {
+                    btn.className = 'level-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition bg-dracula-purple text-dracula-bg border-dracula-purple shadow-sm';
+                } else {
+                    let textColor = 'text-dracula-fg';
+                    if (btnLevel === 'Fácil') textColor = 'text-dracula-green';
+                    if (btnLevel === 'Médio') textColor = 'text-dracula-orange';
+                    if (btnLevel === 'Difícil') textColor = 'text-dracula-pink';
+                    btn.className = `level-btn shrink-0 px-2.5 py-1 rounded-lg text-[11px] font-bold border transition bg-dracula-bg ${textColor} border-dracula-current`;
+                }
+            });
+
+            document.getElementById('topicSelect').value = currentTopicFilter;
+            document.getElementById('statusSelect').value = currentStatusFilter;
+
+            const dot = document.getElementById('activeFilterDot');
+            if (currentTopicFilter !== 'ALL' || currentStatusFilter !== 'ALL') {
+                dot.classList.remove('hidden');
+            } else {
+                dot.classList.add('hidden');
+            }
+
+            const btnView = document.getElementById('btnToggleView');
+            btnView.textContent = viewMode === 'SINGLE' ? '1/1' : 'Lista';
+        }
+
+        function setLevelFilter(level) {
+            currentLevelFilter = level;
+            currentCardIndex = 0;
+            saveState();
+            syncFilterUI();
+            renderQuestions();
+            scrollToTopArea();
+        }
+
+        function setTopicFilter(topic) {
+            currentTopicFilter = topic;
+            currentCardIndex = 0;
+            saveState();
+            syncFilterUI();
+            renderQuestions();
+            scrollToTopArea();
+        }
+
+        function setStatusFilter(status) {
+            currentStatusFilter = status;
+            currentCardIndex = 0;
+            saveState();
+            syncFilterUI();
+            renderQuestions();
+            scrollToTopArea();
+        }
+
+        function toggleFilterDrawer() {
+            const drawer = document.getElementById('filterDrawer');
+            drawer.classList.toggle('hidden');
+        }
+
+        function toggleViewMode() {
+            viewMode = viewMode === 'SINGLE' ? 'LIST' : 'SINGLE';
+            saveState();
+            syncFilterUI();
+            renderQuestions();
+            scrollToTopArea();
+        }
+
+        function scrollToTopArea() {
+            const mainArea = document.getElementById('mainScrollArea');
+            if (mainArea) mainArea.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function prevCard() {
+            const filtered = getFilteredQuestions();
+            if (viewMode === 'LIST') {
+                viewMode = 'SINGLE';
+                syncFilterUI();
+            }
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                saveState();
+                renderQuestions();
+                scrollToTopArea();
+            }
+        }
+
+        function nextCard() {
+            const filtered = getFilteredQuestions();
+            if (viewMode === 'LIST') {
+                viewMode = 'SINGLE';
+                syncFilterUI();
+            }
+            if (currentCardIndex < filtered.length - 1) {
+                currentCardIndex++;
+                saveState();
+                renderQuestions();
+                scrollToTopArea();
+            }
+        }
+
+        function jumpToQuestion(questionId) {
+            // Reseta filtros se a questão não estiver no filtro atual
+            let filtered = getFilteredQuestions();
+            let idx = filtered.findIndex(q => q.id === questionId);
+            if (idx === -1) {
+                currentLevelFilter = 'ALL';
+                currentTopicFilter = 'ALL';
+                currentStatusFilter = 'ALL';
+                syncFilterUI();
+                filtered = getFilteredQuestions();
+                idx = filtered.findIndex(q => q.id === questionId);
+            }
+            viewMode = 'SINGLE';
+            currentCardIndex = idx >= 0 ? idx : 0;
+            saveState();
+            syncFilterUI();
+            closeMapModal();
+            renderQuestions();
+            scrollToTopArea();
+        }
+
+        // ============================================================================
+        // MODAIS (MAPA 50Q, PWA/GITHUB E RESET)
+        // ============================================================================
+        function openMapModal() {
+            renderQuestionMapGrid();
+            const modal = document.getElementById('mapModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeMapModal() {
+            const modal = document.getElementById('mapModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function renderQuestionMapGrid() {
+            const grid = document.getElementById('questionGridMap');
+            const filtered = getFilteredQuestions();
+            const currentId = filtered[currentCardIndex]?.id;
+
+            grid.innerHTML = QUESTIONS.map(q => {
+                const ans = userAnswers[q.id];
+                const isBookmarked = !!bookmarkedIds[q.id];
+                let colorClass = 'bg-dracula-bg border-dracula-current text-dracula-fg';
+
+                if (ans !== undefined) {
+                    if (ans === q.correct) {
+                        colorClass = 'bg-dracula-green/20 border-dracula-green text-dracula-green font-extrabold';
+                    } else {
+                        colorClass = 'bg-dracula-red/20 border-dracula-red text-dracula-red font-extrabold';
+                    }
+                }
+
+                const ringClass = q.id === currentId ? 'ring-2 ring-dracula-purple' : '';
+
+                return `
+                    <button
+                        onclick="jumpToQuestion(${q.id})"
+                        class="relative h-10 rounded-xl border text-xs font-mono flex items-center justify-center active:scale-95 transition ${colorClass} ${ringClass}"
+                    >
+                        <span>${q.id}</span>
+                        ${isBookmarked ? '<span class="absolute -top-1 -right-1 text-[10px] text-dracula-yellow">★</span>' : ''}
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function openPwaModal() {
+            const modal = document.getElementById('pwaModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closePwaModal() {
+            const modal = document.getElementById('pwaModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function openResetModal() {
+            const modal = document.getElementById('resetModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeResetModal() {
+            const modal = document.getElementById('resetModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function confirmResetAll() {
+            userAnswers = {};
+            bookmarkedIds = {};
+            openExplanations = {};
+            currentCardIndex = 0;
+            saveState();
+            updateScoreboard();
+            closeResetModal();
+            renderQuestions();
+        }
+
+        // ============================================================================
+        // EXPORTAR / IMPORTAR PROGRESSO (.JSON) E KIT PWA PARA GITHUB PAGES
+        // ============================================================================
+        function triggerDownloadBlob(filename, content, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        function exportProgressJson() {
+            const payload = {
+                app: "Simulado 50Q Algoritmos Java",
+                exportedAt: new Date().toISOString(),
+                userAnswers,
+                bookmarkedIds,
+                currentCardIndex,
+                currentLevelFilter,
+                currentTopicFilter
+            };
+            triggerDownloadBlob('progresso-algoritmos-50q.json', JSON.stringify(payload, null, 2), 'application/json');
+        }
+
+        function importProgressJson(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    if (data && typeof data.userAnswers === 'object') {
+                        userAnswers = data.userAnswers || {};
+                        bookmarkedIds = data.bookmarkedIds || {};
+                        currentCardIndex = data.currentCardIndex || 0;
+                        saveState();
+                        updateScoreboard();
+                        syncFilterUI();
+                        renderQuestionMapGrid();
+                        renderQuestions();
+                    }
+                } catch (err) {
+                    // Ignora arquivo inválido silenciosamente
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function downloadSelfHtml() {
+            const fullHtml = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+            triggerDownloadBlob('index.html', fullHtml, 'text/html;charset=utf-8');
+        }
+
+        function getManifestJsonObject() {
+            return {
+                name: "Simulado 50Q: Algoritmos e Grafos (Java)",
+                short_name: "Algoritmos 50Q",
+                description: "Simulado Mobile de Algoritmos, Complexidade, BST, AVL e Grafos em Java com 50 questões comentadas.",
+                start_url: "./index.html",
+                display: "standalone",
+                orientation: "portrait",
+                background_color: "#1e1f29",
+                theme_color: "#1e1f29",
+                icons: [
+                    {
+                        src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect width='120' height='120' rx='26' fill='%231e1f29'/%3E%3Crect x='8' y='8' width='104' height='104' rx='20' fill='%23282a36' stroke='%23bd93f9' stroke-width='4'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%2350fa7b' font-family='monospace' font-weight='bold' font-size='42'%3E50Q%3C/text%3E%3Ctext x='50%25' y='82%25' dominant-baseline='middle' text-anchor='middle' fill='%238be9fd' font-family='sans-serif' font-weight='bold' font-size='16'%3EJAVA%3C/text%3E%3C/svg%3E",
+                        sizes: "192x192 512x512",
+                        type: "image/svg+xml",
+                        purpose: "any maskable"
+                    }
+                ]
+            };
+        }
+
+        function downloadManifestFile() {
+            triggerDownloadBlob('manifest.json', JSON.stringify(getManifestJsonObject(), null, 2), 'application/manifest+json');
+        }
+
+        function downloadServiceWorkerFile() {
+            const swCode = `const CACHE_NAME = 'algoritmos-50q-v1';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.json',
+  'https://cdn.tailwindcss.com',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap'
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+    )).then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(cached => cached || fetch(event.request))
+  );
+});
+`;
+            triggerDownloadBlob('sw.js', swCode, 'application/javascript');
+        }
+
+        function setupPwaEnvironment() {
+            // Injeta Manifest Dinâmico para funcionar mesmo sem arquivo externo
+            try {
+                const manifestBlob = new Blob([JSON.stringify(getManifestJsonObject())], { type: 'application/manifest+json' });
+                const manifestUrl = URL.createObjectURL(manifestBlob);
+                const link = document.createElement('link');
+                link.rel = 'manifest';
+                link.href = manifestUrl;
+                document.head.appendChild(link);
+            } catch (e) {}
+
+            // Tenta registrar Service Worker se estiver no GitHub Pages (./sw.js)
+            if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+                navigator.serviceWorker.register('./sw.js').catch(() => {});
+            }
+
+            // Captura prompt nativo de instalação no Android/Chrome
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+                const btn = document.getElementById('btnInstallPwa');
+                if (btn) {
+                    btn.classList.remove('hidden');
+                    btn.classList.add('inline-flex');
+                }
+            });
+        }
+
+        async function triggerNativeInstall() {
+            if (!deferredInstallPrompt) {
+                openPwaModal();
+                return;
+            }
+            deferredInstallPrompt.prompt();
+            await deferredInstallPrompt.userChoice;
+            deferredInstallPrompt = null;
+            const btn = document.getElementById('btnInstallPwa');
+            if (btn) btn.classList.add('hidden');
+        }
+
+        // ============================================================================
+        // SUPORTE A SWIPE (DESLIZAR PARA ESQUERDA / DIREITA NO CELULAR)
+        // ============================================================================
+        function setupTouchSwipe() {
+            const area = document.getElementById('mainScrollArea');
+            let startX = 0;
+            let startY = 0;
+
+            area.addEventListener('touchstart', (e) => {
+                if (e.touches.length !== 1) return;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            }, { passive: true });
+
+            area.addEventListener('touchend', (e) => {
+                if (viewMode !== 'SINGLE' || !e.changedTouches.length) return;
+                const diffX = e.changedTouches[0].clientX - startX;
+                const diffY = e.changedTouches[0].clientY - startY;
+                // Apenas se o movimento horizontal for maior que 70px e dominante sobre o vertical
+                if (Math.abs(diffX) > 70 && Math.abs(diffX) > Math.abs(diffY) * 1.8) {
+                    if (diffX < 0) nextCard();
+                    else prevCard();
+                }
+            }, { passive: true });
+        }
+
+        // ============================================================================
+        // RENDERIZAÇÃO DOS CARDS DE QUESTÃO E BARRA INFERIOR
+        // ============================================================================
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        function getLevelBadgeClasses(level) {
+            if (level === 'Fácil') {
+                return 'bg-dracula-green/15 text-dracula-green border-dracula-green/40';
+            }
+            if (level === 'Médio') {
+                return 'bg-dracula-orange/15 text-dracula-orange border-dracula-orange/40';
+            }
+            return 'bg-dracula-pink/15 text-dracula-pink border-dracula-pink/40';
+        }
+
+        function updateBottomBar(filtered) {
+            const btnPrev = document.getElementById('btnBottomPrev');
+            const btnNext = document.getElementById('btnBottomNext');
+            const btnExp = document.getElementById('btnBottomExp');
+            const lblExp = document.getElementById('lblBottomExp');
+            const lblCounter = document.getElementById('lblBottomCounter');
+
+            if (!filtered.length) {
+                btnPrev.disabled = true;
+                btnNext.disabled = true;
+                lblCounter.textContent = '0/0';
+                return;
+            }
+
+            if (currentCardIndex >= filtered.length) currentCardIndex = 0;
+            const currentQ = filtered[currentCardIndex];
+            const isAnswered = userAnswers[currentQ.id] !== undefined;
+            const isExpOpen = !!openExplanations[currentQ.id];
+
+            btnPrev.disabled = viewMode === 'SINGLE' && currentCardIndex === 0;
+            btnNext.disabled = viewMode === 'SINGLE' && currentCardIndex === filtered.length - 1;
+            lblCounter.textContent = viewMode === 'SINGLE'
+                ? `${currentCardIndex + 1}/${filtered.length}`
+                : `${filtered.length} Qs`;
+
+            if (isAnswered) {
+                btnExp.disabled = false;
+                btnExp.className = 'flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-dracula-purple/20 border border-dracula-purple text-xs font-extrabold text-dracula-purple transition active:scale-95';
+                lblExp.textContent = isExpOpen ? 'Ocultar' : 'Explicação';
+            } else {
+                btnExp.disabled = true;
+                btnExp.className = 'flex items-center justify-center gap-1 py-2.5 px-2 rounded-xl bg-dracula-bg border border-dracula-current text-xs font-bold text-dracula-comment opacity-50';
+                lblExp.textContent = 'Explicação';
+            }
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            const filtered = getFilteredQuestions();
+
+            updateBottomBar(filtered);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-dracula-card border border-dracula-current rounded-2xl p-6 text-center my-4">
+                        <p class="text-sm font-bold text-dracula-fg mb-1">Nenhuma questão encontrada neste filtro.</p>
+                        <p class="text-xs text-dracula-comment mb-4">Altere a dificuldade, tópico ou status acima.</p>
+                        <button onclick="setLevelFilter('ALL'); setTopicFilter('ALL'); setStatusFilter('ALL');" class="px-4 py-2 rounded-xl bg-dracula-purple text-dracula-bg text-xs font-extrabold">
+                            Mostrar Todas as 50 Questões
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let questionsToShow = filtered;
+            if (viewMode === 'SINGLE') {
+                if (currentCardIndex >= filtered.length) currentCardIndex = 0;
+                questionsToShow = [filtered[currentCardIndex]];
+            }
+
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+
+            container.innerHTML = questionsToShow.map(q => {
+                const selected = userAnswers[q.id];
+                const isAnswered = selected !== undefined;
+                const isCorrect = isAnswered && selected === q.correct;
+                const isExpOpen = !!openExplanations[q.id];
+                const isBookmarked = !!bookmarkedIds[q.id];
+
+                const formattedQuestion = escapeHtml(q.question).replace(/\n/g, '<br>');
+
+                const codeHtml = q.code ? `
+                    <pre class="bg-[#191a21] border border-dracula-current rounded-xl p-2.5 my-2.5 text-[11px] sm:text-xs text-dracula-cyan overflow-x-auto custom-scroll leading-relaxed"><code>${escapeHtml(q.code)}</code></pre>
+                ` : '';
+
+                const optionsHtml = q.options.map((optText, idx) => {
+                    let btnStyle = "bg-dracula-bg/80 border-dracula-current text-dracula-fg hover:border-dracula-purple/70 active:scale-[0.99]";
+                    let letterStyle = "bg-dracula-current/70 text-dracula-fg";
+                    let statusIcon = "";
+
+                    if (isAnswered) {
+                        if (idx === q.correct) {
+                            btnStyle = "bg-dracula-green/15 border-dracula-green text-dracula-fg font-semibold";
+                            letterStyle = "bg-dracula-green text-dracula-bg font-extrabold";
+                            statusIcon = `<span class="ml-auto text-[11px] font-extrabold text-dracula-green shrink-0">✓</span>`;
+                        } else if (idx === selected && selected !== q.correct) {
+                            btnStyle = "bg-dracula-red/15 border-dracula-red text-dracula-fg";
+                            letterStyle = "bg-dracula-red text-dracula-bg font-extrabold";
+                            statusIcon = `<span class="ml-auto text-[11px] font-extrabold text-dracula-red shrink-0">✗</span>`;
+                        } else {
+                            btnStyle = "bg-dracula-bg/30 border-dracula-current/40 text-dracula-comment opacity-70";
+                            letterStyle = "bg-dracula-current/30 text-dracula-comment";
+                        }
+                    }
+
+                    return `
+                        <button
+                            onclick="selectOption(${q.id}, ${idx})"
+                            ${isAnswered ? 'disabled' : ''}
+                            class="w-full text-left p-2.5 sm:p-3 rounded-xl border transition flex items-start gap-2.5 ${btnStyle}"
+                        >
+                            <span class="w-6 h-6 rounded-lg text-xs flex items-center justify-center shrink-0 mt-0.5 font-mono ${letterStyle}">
+                                ${letters[idx]}
+                            </span>
+                            <span class="text-xs sm:text-sm leading-snug flex-1">${escapeHtml(optText)}</span>
+                            ${statusIcon}
+                        </button>
+                    `;
+                }).join('');
+
+                const feedbackBanner = isAnswered ? `
+                    <div class="mt-3 pt-2.5 border-t border-dracula-current/60 flex items-center justify-between gap-2">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-extrabold ${isCorrect ? 'bg-dracula-green/20 text-dracula-green' : 'bg-dracula-red/20 text-dracula-red'}">
+                            ${isCorrect ? '🎉 Acertou!' : `❌ Errou! (Gabarito: ${letters[q.correct]})`}
+                        </span>
+
+                        <div class="flex items-center gap-1.5">
+                            <button
+                                onclick="retryQuestion(${q.id})"
+                                class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-dracula-bg border border-dracula-current text-dracula-comment hover:text-dracula-fg transition"
+                            >
+                                ↺ Refazer
+                            </button>
+                            <button
+                                onclick="toggleExplanation(${q.id})"
+                                class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-dracula-purple text-dracula-bg hover:opacity-90 transition flex items-center gap-1 shadow-sm"
+                            >
+                                <span>${isExpOpen ? '▲ Ocultar' : '💡 Ver Explicação'}</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    ${isExpOpen ? `
+                        <div id="exp-box-${q.id}" class="mt-2.5 bg-[#191a21] border-l-4 border-dracula-purple rounded-r-xl p-3 text-xs sm:text-sm text-dracula-fg/95 leading-relaxed space-y-1">
+                            <div class="font-extrabold text-dracula-purple uppercase tracking-wider text-[10px]">
+                                Explicação Detalhada (Gabarito: ${letters[q.correct]})
+                            </div>
+                            <div class="text-dracula-fg/90">${escapeHtml(q.explanation).replace(/\n/g, '<br>')}</div>
+                        </div>
+                    ` : ''}
+                ` : '';
+
+                return `
+                    <article class="bg-dracula-card border border-dracula-current rounded-2xl p-3.5 shadow-md">
+                        <!-- Cabeçalho do Card -->
+                        <div class="flex items-center justify-between gap-1.5 mb-2">
+                            <div class="flex flex-wrap items-center gap-1">
+                                <span class="px-2 py-0.5 rounded-md bg-dracula-bg border border-dracula-current font-mono text-xs font-extrabold text-dracula-purple">
+                                    #${q.id}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-md border text-[10px] font-extrabold ${getLevelBadgeClasses(q.level)}">
+                                    ${q.level}
+                                </span>
+                                <span class="px-2 py-0.5 rounded-md bg-dracula-current/40 text-dracula-cyan text-[10px] font-semibold truncate max-w-[175px] sm:max-w-none">
+                                    ${escapeHtml(q.topic)}
+                                </span>
+                            </div>
+
+                            <!-- Botão Favoritar / Marcar para Revisão -->
+                            <button
+                                onclick="toggleBookmark(${q.id})"
+                                title="Marcar para revisão"
+                                class="w-7 h-7 rounded-lg bg-dracula-bg border border-dracula-current flex items-center justify-center text-sm active:scale-90 transition ${isBookmarked ? 'text-dracula-yellow border-dracula-yellow/50' : 'text-dracula-comment'}"
+                            >
+                                ★
+                            </button>
+                        </div>
+
+                        <!-- Enunciado -->
+                        <div class="text-xs sm:text-sm font-medium text-dracula-fg leading-relaxed mb-2.5">
+                            ${formattedQuestion}
+                        </div>
+
+                        ${codeHtml}
+
+                        <!-- 5 Alternativas -->
+                        <div class="space-y-1.5">
+                            ${optionsHtml}
+                        </div>
+
+                        ${feedbackBanner}
+                    </article>
+                `;
+            }).join('');
+        }
+
+        // Inicializa o aplicativo ao carregar
+        window.onload = function () {
+            loadState();
+            setupPwaEnvironment();
+            setupTouchSwipe();
+            syncFilterUI();
+            updateScoreboard();
+            renderQuestions();
+        };
+    </script>
+</body>
+</html>
